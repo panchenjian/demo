@@ -1,14 +1,12 @@
 export const AblumType = {
   ImageItem: class {
     /**
-     * @param id 图片ID
-     * @param url 图片URL
-     * @param groupName 模板组名称
+     * @param result_image 结果图
+     * @param template_name 模板名称
      */
-    constructor({ id, url, groupName }) {
-      this.id = id;
-      this.url = url;
-      this.groupName = groupName;
+    constructor({ result_image, template_name }) {
+      this.result_image = result_image;
+      this.template_name = template_name;
     }
   },
   Ablum: class {

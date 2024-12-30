@@ -36,14 +36,13 @@ export function createAvatar(filePath) {
   });
 }
 
-export function submitDrawingTask(data) {
+export function createSwap(data) {
   let params = {
     url: "/api/face_swap/create_swap",
     method: "POST",
     data: data,
   };
-  params.loadingToastTips =
-    "正在分析照片，请不要退出当前页面（预计需要10-20秒）";
+  params.loadingToastTips = "正在炼丹，即将完成~";
   return request(params);
 }
 

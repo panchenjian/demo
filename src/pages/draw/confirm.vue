@@ -193,7 +193,7 @@
 <script setup>
 import { ref, computed, reactive } from "vue";
 import { checkLogin } from "../../utils/common";
-import { submitDrawingTask, createAvatar } from "../../api/lunaDraw";
+import { createSwap, createAvatar } from "../../api/lunaDraw";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { closeIcon } from "../../common/svgBase64";
@@ -208,6 +208,7 @@ import {
   removeDigitalAvatar,
 } from "../../api/digitalAvatar";
 import { getUserInfo } from "../../api/user";
+import { AblumStore, AblumType } from "../../store/album";
 const store = useStore();
 const { t } = useI18n();
 
@@ -353,52 +354,21 @@ console.log("currTemplate", currTemplate.value);
 
 // 提交绘图任务
 const onSubmit = async () => {
-  if (!userDraft.value.is_collection) {
-    // 遍历 templateSelectedAvatar，如果有模板没有选择人脸，则提示用户选择
-    for (const key in templateSelectedAvatar) {
-      if (!templateSelectedAvatar[key]) {
-        uni.showToast({
-          title: "请为每个模板选择一个数字分身",
-          icon: "none",
-        });
-        return;
-      }
-    }
-
-    // templateFaceMappingList 遍历每一个mapping，过滤掉值为空的数据
-    DraftStore.setTemplateFaceMapping(
-      store,
-      templateFaceMappingList.value.map((item) => {
-        for (const key in item.mapping) {
-          if (!item.mapping[key]) {
-            delete item.mapping[key];
-          }
-        }
-        return item;
-      })
-    );
-    DraftStore.resetUserImage(store);
-  } else {
-    if (!selectedAvatar.value) {
-      uni.showToast({
-        title: "请先选择一个数字分身",
-        icon: "none",
-      });
-      return;
-    }
-    DraftStore.setUserImage(
-      store,
-      new DraftType.UserImage({
-        file_id: selectedAvatar.value.file_id,
-        up_file_id: selectedAvatar.value.up_file_id,
-        up_face_id: selectedAvatar.value.face_id,
-      })
-    );
-    DraftStore.resetTemplateFaceMapping(store);
+  if (!selectedAvatar.value) {
+    uni.showToast({
+      title: "请先选择一个数字分身",
+      icon: "none",
+    });
+    return;
   }
 
-  const res = await submitDrawingTask({
-    draft: userDraft.value,
+  const res = await createSwap({
+    target_image: userDraft.value.template.target_image,
+    user_image: selectedAvatar.value.user_image,
+    avatar_id: selectedAvatar.value.id,
+    face_mapping: {
+      "T#0": "U#" + selectedAvatar.value.face_id,
+    },
   });
 
   if (res.code !== 1) {
@@ -409,21 +379,14 @@ const onSubmit = async () => {
     return;
   }
 
-  const upTaskId = res.data?.messageId;
-  if (!upTaskId) {
-    uni.showToast({
-      title: "提交创作任务异常，请联系客服",
-      icon: "none",
-    });
-    return;
-  }
-
+  AblumStore.setImageList(store, [
+    new AblumType.ImageItem({
+      result_image: res.data.result.result_image,
+      template_name: "模板名称TODO",
+    }),
+  ]);
   uni.navigateTo({
-    url:
-      "/pages/draw/generate?up_task_id=" +
-      encodeURIComponent(upTaskId) +
-      "&show_predicate_time=" +
-      encodeURIComponent(res.data.show_predicate_time),
+    url: "/pages/draw/detail",
   });
 };
 </script>

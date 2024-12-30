@@ -16,7 +16,7 @@
       <swiper-item v-for="(item, index) in resultImageList" :key="index">
         <view class="result-image-wrap">
           <image
-            :src="item.url"
+            :src="item.result_image"
             mode="aspectFill"
             class="result-image"
             @tap="$debounceClick(handleClickImage)(item)"
@@ -38,7 +38,11 @@
       </view>
       <view
         class="toolBarItemWrap"
-        @tap="$debounceClick(onSaveImage)([resultImageList[currentPage].url])"
+        @tap="
+          $debounceClick(onSaveImage)([
+            resultImageList[currentPage].result_image,
+          ])
+        "
       >
         <image
           :src="isDarkTheme ? greyDownloadIcon : blackDownloadIcon"
@@ -102,17 +106,17 @@ onShareAppMessage(() => {
   return {
     title: t("api-share.moment-title.default"),
     path: "/pages/draw/portrait",
-    imageUrl: img.url,
+    imageUrl: img.result_image,
   };
 });
 
 const handleClickImage = (img) => {
   if (osName.value === "android") {
-    previewImageonAndriod(img.url);
+    previewImageonAndriod(img.result_image);
   } else {
     uni.previewImage({
       current: currentPage.value,
-      urls: resultImageList.value.map((img) => img.url),
+      urls: resultImageList.value.map((img) => img.result_image),
     });
   }
 };
