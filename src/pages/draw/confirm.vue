@@ -191,14 +191,14 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from "vue";
+import { ref, computed } from "vue";
 import { checkLogin } from "../../utils/common";
 import { createSwap, createAvatar } from "../../api/lunaDraw";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { closeIcon } from "../../common/svgBase64";
 import { requireLogin } from "../../utils/request";
-import { DraftStore, DraftType } from "../../store/draft";
+import { DraftStore } from "../../store/draft";
 const closeIconForImage = ref(closeIcon);
 
 import { useStore } from "vuex";
@@ -232,8 +232,6 @@ const digitalAvatarList = ref([]);
 
 /** @type {import('vue').Ref<DigitalAvatar | null>} */
 const selectedAvatar = ref(null);
-
-const templateSelectedAvatar = reactive({});
 
 const chooseImage = async (sourceType) => {
   const isLogin = await checkLogin({ delta: 1 });
