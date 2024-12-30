@@ -2,7 +2,7 @@ import request from "../utils/request";
 
 export function getDigitalAvatarList(data) {
   return request({
-    url: "/api/digitalAvatar/list",
+    url: "/api/digital_avatar/list",
     method: "GET",
     preventLoading: true,
     loginRequired: true,
@@ -15,7 +15,7 @@ export function getDigitalAvatarList(data) {
 
 export function removeDigitalAvatar(data) {
   return request({
-    url: "/api/digitalAvatar/remove",
+    url: "/api/digital_avatar/remove",
     method: "POST",
     preventLoading: true,
     loginRequired: true,

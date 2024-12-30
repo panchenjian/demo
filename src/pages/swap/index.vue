@@ -44,7 +44,7 @@ const groupList = computed(() => {
   return store.state.swap;
 });
 const handleMoreClick = (group) => {
-  DraftStore.resetTemplates(store);
+  DraftStore.resetTemplate(store);
   // todo 根据玩法信息动态设置
   DraftStore.setStrategyId(store, 2);
   DraftStore.setIsCollection(store, 0);

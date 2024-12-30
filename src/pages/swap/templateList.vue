@@ -94,7 +94,7 @@ const handleGenerateBtnClick = () => {
     return;
   }
 
-  DraftStore.setTemplates(
+  DraftStore.setTemplate(
     store,
     selectedTemplates.value.map((item) => {
       return new DraftType.Template({

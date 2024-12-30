@@ -20,24 +20,12 @@
             :autoplay="swiperAutoPlay"
           >
             <swiper-item
-              v-for="(template, index) in userDraft.templates"
+              v-for="(template, index) in [userDraft.template]"
               :key="index"
               class="swiperItem"
             >
-              <luna-image-face-selector
-                :image-url="template.image_url"
-                :face-list="template.face_list"
-                @selectFace="onSelectFace"
-                :render-height="renderHeight"
-                :render-width="renderWidth"
-                :show-floating-tips="showFloatingTips"
-                v-if="!userDraft.is_collection"
-              >
-                <span class="highlight"> 点击框框切换目标位置 </span>
-              </luna-image-face-selector>
               <image
-                v-else
-                :src="template.image_url"
+                :src="template.target_image"
                 :style="{
                   width: `${renderWidth}rpx`,
                   height: `${renderHeight}rpx`,
@@ -102,7 +90,7 @@
               >
                 <view class="selected-template">
                   <image
-                    :src="avatar.face_url"
+                    :src="avatar.face_image"
                     mode="aspectFill"
                     class="selected-template-img"
                   ></image>
@@ -127,7 +115,7 @@
             <image
               :src="
                 selectedAvatar
-                  ? selectedAvatar.face_url
+                  ? selectedAvatar.face_image
                   : '/static/empty-avatar.svg'
               "
               mode="aspectFill"
@@ -224,7 +212,7 @@
 <script setup>
 import { ref, computed, reactive } from "vue";
 import { checkLogin } from "../../utils/common";
-import { submitDrawingTask, uploadImage } from "../../api/lunaDraw";
+import { submitDrawingTask, createAvatar } from "../../api/lunaDraw";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import LunaImageFaceSelector from "../../components/LunaImageFaceSelector.vue";
@@ -251,12 +239,7 @@ const sliderChange = (e) => {
   drawNumber.value = e.detail.value;
   DraftStore.setRandomCandidateCnt(store, drawNumber.value);
 };
-const totalDrawNum = computed(() => {
-  if (!userDraft.value.is_collection) {
-    return userDraft.value.templates.length;
-  }
-  return drawNumber.value * userDraft.value.templates.length;
-});
+const totalDrawNum = ref(1);
 const balanceDraw = ref(0);
 const renderWidth = 520;
 const renderHeight = renderWidth * 1.5;
@@ -264,10 +247,9 @@ const renderHeight = renderWidth * 1.5;
 /**
  * @typedef {Object} DigitalAvatar 数字分身信息
  * @property {number} id - 数字分身ID
- * @property {number} face_id - 算法段人脸ID
- * @property {string} face_url - 脸部图片地址
- * @property {number} file_id - 文件ID
- * @property {number} up_file_id - 算法端文件ID
+ * @property {number} face_id - 人脸ID
+ * @property {string} face_image - 脸部图片地址
+ * @property {string} user_image - 上传图片地址
  */
 
 /** @type {import('vue').Ref<DigitalAvatar[]>} */
@@ -278,6 +260,7 @@ const selectedAvatar = ref(null);
 
 const templateSelectedAvatar = reactive({});
 const initTemplateSelectedAvatar = () => {
+  return;
   userDraft.value.templates.forEach((template) => {
     templateSelectedAvatar[template.up_file_id] = selectedAvatar.value;
   });
@@ -310,7 +293,7 @@ const confirmUpload = async (filePath) => {
 
   uni.showLoading({ title: "数字分身制作中", mask: true });
   try {
-    const res = await uploadImage(filePath);
+    const res = await createAvatar(filePath);
     uni.hideLoading();
     const data = JSON.parse(res.data);
     if (data.code === -1) {
@@ -413,21 +396,9 @@ const getAvatarList = async (isFirstFetching = true) => {
   const res = await getDigitalAvatarList();
   if (res.code === 1) {
     const faces = res.data.list || [];
-    digitalAvatarList.value = faces.map((item) => {
-      return {
-        id: item.id,
-        face_id: item.up_face_id,
-        face_url: item.face_url,
-        file_id: item.file_id,
-        up_file_id: item.up_file_id,
-      };
-    });
+    digitalAvatarList.value = faces;
     selectedAvatar.value = digitalAvatarList.value[0];
-    if (
-      digitalAvatarList.value.length &&
-      isFirstFetching &&
-      !userDraft.value.is_collection
-    ) {
+    if (digitalAvatarList.value.length && isFirstFetching) {
       initTemplateFaceMappingList();
       initTemplateSelectedAvatar();
     }
@@ -499,13 +470,14 @@ const handleSwiperChange = (e) => {
 
 // 当前预览的模板
 const currTemplate = computed(() => {
-  return userDraft.value.templates[currTemplateIndex.value];
+  return userDraft.value.template;
 });
 console.log("currTemplate", currTemplate.value);
 
 // 初始化模板人脸映射列表
 const templateFaceMappingList = ref([]);
 const initTemplateFaceMappingList = () => {
+  return;
   userDraft.value.templates.forEach((template) => {
     templateFaceMappingList.value.push(
       new DraftType.TemplateFaceMappingItem({

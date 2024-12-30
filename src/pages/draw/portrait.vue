@@ -54,7 +54,7 @@
             >
               <view style="display: flex; flex-direction: column">
                 <image
-                  :src="template.image_url"
+                  :src="template.target_image"
                   mode="aspectFill"
                   :lazy-load="true"
                   class="template-item-img"
@@ -63,90 +63,24 @@
                   <view class="name">
                     {{ template.name }}
                   </view>
-                  <view class="desc">
-                    <view>
-                      <span style="margin-right: 2px">
-                        {{ template.child_template_cnt }}
-                      </span>
-                      <span>张子模版</span>
-                    </view>
-                    <image :src="iconCollection" class="icon-collection" />
-                  </view>
                 </view>
               </view>
-              <view class="selected-mask" v-if="isSelected(template.id)"></view>
             </view>
           </view>
         </scroll-view>
       </swiper-item>
     </swiper>
-    <view
-      class="action-bar"
-      v-if="selectedTemplates?.length"
-      :class="{ 'action-bar-hidden': !actionBarVisible }"
-    >
-      <view v-show="actionBarVisible">
-        <view class="action-wrapper">
-          <view class="desc" :style="$getMediumFontWeight()">{{
-            t("draw-portrait.action-wrap-title")
-          }}</view>
-          <button
-            @tap="$debounceClick(onClickNextStep)()"
-            class="main-btn"
-            :style="$getMediumFontWeight()"
-          >
-            {{ t("draw-portrait.action-wrap-btn") }}
-          </button>
-        </view>
-        <scroll-view class="scroll-view_H" scroll-x="true">
-          <view class="selected-list-wrapper">
-            <view
-              v-for="template in selectedTemplates"
-              :key="template.id"
-              class="selected-template-wrapper"
-            >
-              <view class="selected-template">
-                <image
-                  :src="template.image_url"
-                  mode="aspectFill"
-                  class="selected-template-img"
-                ></image>
-              </view>
-              <view class="selected-template-title">
-                {{ template.name }}
-              </view>
-              <image
-                :src="closeIconForImage"
-                class="delete-icon"
-                @tap="$debounceClick(onSelectTemplate)(template)"
-              />
-            </view>
-          </view>
-        </scroll-view>
-      </view>
-      <view
-        class="actionBarDisplayBtnWrap"
-        @tap="$debounceClick(changeActionBarVisbile)()"
-      >
-        <image
-          class="actionBarDisplayBtn"
-          :class="{ closeStatusBtn: !actionBarVisible }"
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNyIgaGVpZ2h0PSIxMCIgdmlld0JveD0iMCAwIDE3IDEwIiBmaWxsPSJub25lIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEuNTg1IDguODk1QS43NDUuNzQ1IDAgMSAxIC41NCA3LjgzM0w3LjQ5Mi45OWMuNTYtLjU1IDEuNDU2LS41NSAyLjAxNiAwbDYuOTUyIDYuODQyYS43NDUuNzQ1IDAgMCAxLTEuMDQ1IDEuMDYyTDkuMjQ0IDIuODIzYTEuMDYgMS4wNiAwIDAgMC0xLjQ4OCAwbC02LjE3IDYuMDcyeiIgZmlsbD0iI0RERCIvPjwvc3ZnPg=="
-        ></image>
-      </view>
-    </view>
   </view>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
-import { closeIcon, collectionIcon } from "../../common/svgBase64.js";
 import { useStore } from "vuex";
 import { DraftStore, DraftType } from "../../store/draft";
 import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { useI18n } from "vue-i18n";
 
-const selectedTemplates = ref([]);
+const selectedTemplate = ref(null);
 const selectedGroup = ref();
 const store = useStore();
 const { t } = useI18n();
@@ -155,48 +89,24 @@ const tagScrollVisbile = ref(false);
 const actionBarVisible = ref(true);
 const curPage = ref(0);
 const curTagScrollView = ref("");
-const closeIconForImage = ref(closeIcon);
-const iconCollection = ref(collectionIcon);
-// todo 改成组件入参
+
 const groupList = computed(() => store.state.portrait);
 
 onLoad(async () => {
-  // todo 改成组件入参
   await store.dispatch("fetchPortrait");
   const defaultSelected = groupList.value?.[0];
   selectedGroup.value = defaultSelected || [];
 });
 
 const onClickNextStep = () => {
-  if (!selectedTemplates.value?.length) {
-    uni.showModal({
-      title: t("draw-portrait.toast-none-selected-title"),
-      content: t("draw-portrait.toast-none-selected-content"),
-      confirmColor: "#C465FF",
-      confirmText: t("draw-portrait.toast-none-selected-confirmText"),
-      showCancel: false,
-    });
-    return;
-  }
-
-  DraftStore.setTemplates(
+  DraftStore.setTemplate(
     store,
-    selectedTemplates.value.map((item) => {
-      return new DraftType.Template({
-        id: item.id,
-        up_file_id: item.up_template_id,
-        name: item.name,
-        image_url: item.image_url,
-        group_name: item.group_name,
-        group_id: item.group_id,
-        face_list: item.face_list,
-      });
+    new DraftType.Template({
+      id: selectedTemplate.value.id,
+      name: selectedTemplate.value.name,
+      target_image: selectedTemplate.value.target_image,
     })
   );
-
-  // todo 动态获取，根据当前玩法信息
-  DraftStore.setStrategyId(store, 1);
-  DraftStore.setIsCollection(store, 1);
 
   uni.navigateTo({
     url: "/pages/draw/confirm",
@@ -212,30 +122,8 @@ const onSelectGroup = (tag) => {
 };
 
 const onSelectTemplate = (template) => {
-  if (selectedTemplates.value.find((s) => s.id === template.id)?.id) {
-    selectedTemplates.value = selectedTemplates.value.filter(
-      (s) => s.id !== template.id
-    );
-  } else {
-    if (selectedTemplates.value.length < 5) {
-      selectedTemplates.value.push({
-        ...template,
-        group_name: selectedGroup.value.name,
-        group_id: selectedGroup.value.id,
-      });
-    } else {
-      uni.showToast({
-        title: t("draw-portrait.toast-exceed-max"),
-        icon: "none",
-      });
-    }
-  }
-};
-const isSelected = (id) => {
-  return selectedTemplates.value.filter?.((cur) => cur.id === id)?.length;
-};
-const changeActionBarVisbile = () => {
-  actionBarVisible.value = !actionBarVisible.value;
+  selectedTemplate.value = template;
+  onClickNextStep();
 };
 
 const handleSwiperChange = (current) => {
@@ -403,29 +291,8 @@ onShareAppMessage(() => {
   gap: 16px;
 }
 
-.action-wrapper {
-  margin: 20px 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 48rpx;
-  line-height: 48rpx;
-}
-
-.selected-mask {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0px;
-  z-index: 3;
-  border-radius: 8px;
-  border: 3px solid #c465ff;
-  box-sizing: border-box;
-}
-
 .template-desc {
-  height: 76rpx;
+  height: 36rpx;
   z-index: 2;
   border-radius: 0 0 8px 8px;
   font-size: 14px;
@@ -441,20 +308,6 @@ onShareAppMessage(() => {
   .name {
     font-size: 14px;
     font-weight: 580;
-  }
-
-  .desc {
-    font-size: 12px;
-    color: #909090;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    width: 100%;
-
-    .icon-collection {
-      width: 40rpx;
-      height: 40rpx;
-    }
   }
 }
 

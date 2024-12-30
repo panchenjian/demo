@@ -3,29 +3,13 @@ export const DraftType = {
     /**
      * 用户选择的模板信息
      * @param id 模板ID
-     * @param up_file_id 算法端文件ID
      * @param name 模板名称
-     * @param image_url 模板封面图URL
-     * @param group_name 模板组名称
-     * @param group_id 模板组ID
-     * @param face_list 模板人脸列表
+     * @param target_image 模板封面图URL
      */
-    constructor({
-      id,
-      up_file_id,
-      name,
-      image_url,
-      group_name,
-      group_id,
-      face_list,
-    }) {
+    constructor({ id, name, target_image }) {
       this.id = id;
-      this.up_file_id = up_file_id;
       this.name = name;
-      this.image_url = image_url;
-      this.group_name = group_name;
-      this.group_id = group_id;
-      this.face_list = face_list;
+      this.target_image = target_image;
     }
   },
   UserImage: class {
@@ -55,7 +39,7 @@ export const DraftType = {
   Draft: class {
     /**
      * 用户作图草稿
-     * @param {Array<DraftType.Template>} templates 用户选择模板列表
+     * @param {Array<DraftType.Template>} template 用户选择模板
      * @param strategy_id 玩法策略ID
      * @param is_collection 合辑模板
      * @param random_candidate_cnt 合辑模板每一张模板随机选择子模版的数量
@@ -63,14 +47,14 @@ export const DraftType = {
      * @param {Array<DraftType.TemplateFaceMappingItem>} template_face_mapping 人脸映射关系数组
      */
     constructor({
-      templates,
+      template,
       strategy_id,
       is_collection,
       random_candidate_cnt,
       user_image,
       template_face_mapping,
     }) {
-      this.templates = templates;
+      this.template = template;
       this.strategy_id = strategy_id;
       this.is_collection = is_collection;
       this.random_candidate_cnt = random_candidate_cnt;
@@ -154,37 +138,33 @@ export const DraftStore = {
     return store.state.draft.strategy_id;
   },
   /**
-   * 设置用户已选的模板列表
+   * 设置用户已选的模板
    * @param {import('vuex').Store} store Vuex store 对象
-   * @param {Array<DraftType.Template>} templates 模板数组
+   * @param {DraftType.Template} template 模板数组
    */
-  setTemplates(store, templates) {
-    // 校验每个元素
-    const isValid = templates.every(
-      (item) => item instanceof DraftType.Template
-    );
-
+  setTemplate(store, template) {
+    const isValid = template instanceof DraftType.Template;
     if (!isValid) {
       throw new Error(
-        "The param [templates] contains invalid items. All items must be instances of {DraftType.Template}."
+        "The param [template] contains invalid items. All items must be instances of {DraftType.Template}."
       );
     }
 
     store.commit("updateDraft", {
-      templates,
+      template,
     });
   },
   /**
-   * 获取用户已选的模板列表
+   * 获取用户已选的模板
    * @param {import('vuex').Store} store Vuex store 对象
    * @returns {Array<DraftType.Template>} 模板数组
    */
-  getTemplates(store) {
-    return store.state.draft.templates;
+  getTemplate(store) {
+    return store.state.draft.template;
   },
-  resetTemplates(store) {
+  resetTemplate(store) {
     store.commit("updateDraft", {
-      templates: [],
+      template: [],
     });
   },
 };

@@ -31,7 +31,6 @@ const getOsName = () => {
 
 const preloadData = async () => {
   // 获取首页数据：玩法列表
-  store.dispatch("fetchStrategyList");
   store.dispatch("fetchPortrait");
   store.dispatch("fetchSwap");
   // store.dispatch("fetchFaceSwap");

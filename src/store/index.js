@@ -1,10 +1,9 @@
 import { createStore } from "vuex";
-import { getGroupList, getStrategyList } from "../api/swapTemplate";
+import { getGroupList } from "../api/swapTemplate";
 
 const state = {
   portrait: null,
   swap: null,
-  strategyList: null,
   browseringGroupDetail: null,
   /**
    * @type {AblumType.Ablum} 当前查看的相册详情
@@ -41,9 +40,6 @@ const mutations = {
   setSwap(state, data) {
     state.swap = data;
   },
-  setStrategyList(state, data) {
-    state.strategyList = data;
-  },
 };
 const createFetchAction = (commit, state, getter, fetchFunction) => {
   const fetchPromise =
@@ -65,8 +61,7 @@ const actions = {
   fetchPortrait({ commit }) {
     return createFetchAction(commit, this.state, "portrait", () =>
       getGroupList({
-        // todo 动态传参 玩法id
-        id: 1,
+        page_id: 1,
       }).then((res) => {
         if (res.code === 1) {
           return {
@@ -80,28 +75,12 @@ const actions = {
   fetchSwap({ commit }) {
     return createFetchAction(commit, this.state, "swap", () =>
       getGroupList({
-        // todo 动态传参 玩法id
-        id: 2,
+        page_id: 2,
       }).then((res) => {
         if (res.code === 1) {
           return {
             mutationName: "setSwap",
             data: res.data?.groupList,
-          };
-        }
-      })
-    );
-  },
-  fetchStrategyList({ commit }) {
-    return createFetchAction(commit, this.state, "strategyList", () =>
-      getStrategyList().then((res) => {
-        if (res.code === 1) {
-          // 遍历玩法列表，加载模板组数据
-          // 跨组多选 UI 1 ：获取第一个模板组的模板列表
-          // 不允许跨组多选 UI 2 ：获取所有模板组带预览模板图（推荐模板
-          return {
-            mutationName: "setStrategyList",
-            data: res.data?.strategyList,
           };
         }
       })

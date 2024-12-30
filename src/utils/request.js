@@ -1,6 +1,7 @@
 import { defaultLoadingTitle } from "../common/variable.js";
 
-const baseUrl = "https://test.luna-api.duimixinyifu.com"; // 接口基础 URL
+// const baseUrl = "https://test.luna-api.duimixinyifu.com"; // 接口基础 URL
+const baseUrl = "http://luna-lite-server.test"; // 接口基础 URL
 export { baseUrl };
 // 添加请求拦截器
 uni.addInterceptor("request", {

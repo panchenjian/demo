@@ -6,7 +6,7 @@ export function getMyGalleryList(data, preventLoading) {
   }
 
   return request({
-    url: "/api/lunaDraw/myGalleryListV3",
+    url: "/api/face_swap/user_records",
     method: "GET",
     data,
     preventLoading,
@@ -16,7 +16,7 @@ export function getMyGalleryList(data, preventLoading) {
   });
 }
 
-export function uploadImage(filePath) {
+export function createAvatar(filePath) {
   const token = uni.getStorageSync("token");
 
   // 如果存在 token，则将其添加到请求头中
@@ -29,7 +29,7 @@ export function uploadImage(filePath) {
   }
 
   return uni.uploadFile({
-    url: `${baseUrl}/api/lunaDraw/uploadImage`,
+    url: `${baseUrl}/api/face_swap/create_avatar`,
     filePath: filePath,
     name: "file",
     header: header,
@@ -38,14 +38,12 @@ export function uploadImage(filePath) {
 
 export function submitDrawingTask(data) {
   let params = {
-    url: "/api/lunaDraw/submitDrawingV3",
+    url: "/api/face_swap/create_swap",
     method: "POST",
     data: data,
   };
-  if (data.is_share || false) {
-    params.loadingToastTips =
-      "正在分析照片，请不要退出当前页面（预计需要10-20秒）";
-  }
+  params.loadingToastTips =
+    "正在分析照片，请不要退出当前页面（预计需要10-20秒）";
   return request(params);
 }
 
