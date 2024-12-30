@@ -16,8 +16,6 @@
             :duration="600"
             indicator-active-color="#C465FF"
             indicator-color="rgba(217,217,217,0.300)"
-            @change="handleSwiperChange"
-            :autoplay="swiperAutoPlay"
           >
             <swiper-item
               v-for="(template, index) in [userDraft.template]"
@@ -95,8 +93,8 @@
                     class="selected-template-img"
                   ></image>
                 </view>
-                <view class="selected-mask" v-if="isSelected(avatar.id)"></view>
-                <view class="delete-icon-wrap" v-if="!isSelected(avatar.id)">
+                <view class="selected-mask" v-if="isSelected(avatar)"></view>
+                <view class="delete-icon-wrap" v-if="!isSelected(avatar)">
                   <image
                     src="/static/delete-avatar-icon.svg"
                     class="delete-icon"
@@ -153,27 +151,9 @@
         </view>
       </view>
       <view class="draw-number-wrap">
-        <view class="title" v-if="userDraft.is_collection">
-          <view>每个模板生成数量</view>
-          <view>{{ drawNumber }}/{{ maxDrawNumber }}</view>
-        </view>
-        <view class="slider-wrapper" v-if="userDraft.is_collection">
-          <slider
-            :value="drawNumber"
-            @change="sliderChange"
-            @changing="sliderChange"
-            min="1"
-            :max="maxDrawNumber"
-            block-size="24"
-            active-color="#8186FF"
-            background-color="#8c8c8c4d"
-            block-color="#FFF"
-            style="margin: 0"
-          />
-        </view>
         <view class="preview-number">
           <view class="left">
-            预计生成
+            消耗点数
             <span class="num-span">
               {{ totalDrawNum }}
             </span>
@@ -185,14 +165,15 @@
               <span class="num-span">{{ balanceDraw }}</span>
               张
             </view>
-            <!--            <button-->
-            <!--              type="plain"-->
-            <!--              class="recharge-btn"-->
-            <!--              style="width: 120rpx; height: 24px"-->
-            <!--              @tap="$debounceClick(onRechargeBtnClick)()"-->
-            <!--            >-->
-            <!--              充值-->
-            <!--            </button>-->
+            <button
+              type="plain"
+              v-if="showRechargeBtn"
+              class="recharge-btn"
+              style="width: 120rpx; height: 24px"
+              @tap="$debounceClick(onRechargeBtnClick)()"
+            >
+              充值
+            </button>
           </view>
         </view>
       </view>
@@ -215,7 +196,6 @@ import { checkLogin } from "../../utils/common";
 import { submitDrawingTask, createAvatar } from "../../api/lunaDraw";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
-import LunaImageFaceSelector from "../../components/LunaImageFaceSelector.vue";
 import { closeIcon } from "../../common/svgBase64";
 import { requireLogin } from "../../utils/request";
 import { DraftStore, DraftType } from "../../store/draft";
@@ -232,17 +212,11 @@ const store = useStore();
 const { t } = useI18n();
 
 const userDraft = computed(() => DraftStore.getDraft(store));
-const drawNumber = ref(4);
-const maxDrawNumber = 8;
-DraftStore.setRandomCandidateCnt(store, drawNumber.value);
-const sliderChange = (e) => {
-  drawNumber.value = e.detail.value;
-  DraftStore.setRandomCandidateCnt(store, drawNumber.value);
-};
 const totalDrawNum = ref(1);
 const balanceDraw = ref(0);
 const renderWidth = 520;
 const renderHeight = renderWidth * 1.5;
+const showRechargeBtn = ref(false);
 
 /**
  * @typedef {Object} DigitalAvatar 数字分身信息
@@ -259,13 +233,6 @@ const digitalAvatarList = ref([]);
 const selectedAvatar = ref(null);
 
 const templateSelectedAvatar = reactive({});
-const initTemplateSelectedAvatar = () => {
-  return;
-  userDraft.value.templates.forEach((template) => {
-    templateSelectedAvatar[template.up_file_id] = selectedAvatar.value;
-  });
-  console.log("after initTemplateSelectedAvatar", templateSelectedAvatar);
-};
 
 const chooseImage = async (sourceType) => {
   const isLogin = await checkLogin({ delta: 1 });
@@ -308,7 +275,7 @@ const confirmUpload = async (filePath) => {
       });
       return;
     }
-    getAvatarList(digitalAvatarList.value.length === 0);
+    getAvatarList();
   } catch (err) {
     console.log(err);
     uni.hideLoading();
@@ -317,48 +284,9 @@ const confirmUpload = async (filePath) => {
 
 const onSelectAvatar = (avatar) => {
   console.log(avatar, "on select avatar");
-  swiperAutoPlay.value = false;
   selectedAvatar.value = avatar;
-  if (userDraft.value.is_collection) {
-    return;
-  }
-  // 以下逻辑是非合辑模板专属
-  templateSelectedAvatar[currTemplate.value.up_file_id] = avatar;
-  // 设置templateFaceMappingList对应模板的对应人脸关系
-  const templateItem = templateFaceMappingList.value.find(
-    (item) => item.up_file_id == currTemplate.value.up_file_id
-  );
-  // templateItem.mapping 对象的key是人脸id，value是avatar的face_id。其他key设置为null
-  console.log(
-    "freddy debug",
-    templateItem.mapping,
-    currSelectedFace.value.id,
-    selectedAvatar.value.face_id
-  );
-  for (const key in templateItem.mapping) {
-    if (key == currSelectedFace.value.id) {
-      templateItem.mapping[key] = selectedAvatar.value.face_id;
-    } else {
-      templateItem.mapping[key] = null;
-    }
-  }
-  console.log("updated tempateMapping", templateFaceMappingList.value);
 };
 const onDeleteAvatar = (avatar) => {
-  console.log(avatar, "on delete avatar");
-  // 检查是否有模板使用了该avatar，如果有则提示用户删除失败
-  const isUsed = templateFaceMappingList.value.some((item) => {
-    return Object.values(item.mapping).includes(avatar.face_id);
-  });
-
-  if (isUsed) {
-    uni.showToast({
-      title: "该分身已有模板使用，请先取消选择",
-      icon: "none",
-    });
-    return;
-  }
-
   uni.showModal({
     content: "是否删除该分身？",
     confirmText: "确认删除",
@@ -375,33 +303,21 @@ const onDeleteAvatar = (avatar) => {
       }
     },
   });
-
-  // selectedAvatar.value = null;
 };
 const onResetSelectedAvatar = () => {
   selectedAvatar.value = null;
-  if (userDraft.value.is_collection) {
-    return;
-  }
-  templateSelectedAvatar[currTemplate.value.up_file_id] = null;
-};
-const isSelected = (id) => {
-  if (userDraft.value.is_collection) {
-    return selectedAvatar.value && selectedAvatar.value.id === id;
-  }
-  return templateSelectedAvatar[currTemplate.value.up_file_id]?.id === id;
 };
 
-const getAvatarList = async (isFirstFetching = true) => {
+const isSelected = (avatar) => {
+  return selectedAvatar.value && selectedAvatar.value.id === avatar.id;
+};
+
+const getAvatarList = async () => {
   const res = await getDigitalAvatarList();
   if (res.code === 1) {
     const faces = res.data.list || [];
     digitalAvatarList.value = faces;
     selectedAvatar.value = digitalAvatarList.value[0];
-    if (digitalAvatarList.value.length && isFirstFetching) {
-      initTemplateFaceMappingList();
-      initTemplateSelectedAvatar();
-    }
   }
 };
 
@@ -424,48 +340,9 @@ onShow(() => {
   });
 });
 
-const showFloatingTips = ref(true);
-const currSelectedFace = computed(() => {
-  return currTemplate.value.face_list.find((face) => face.id);
-});
-const onSelectFace = (face) => {
-  if (userDraft.value.is_collection) {
-    // 合辑模板不支持指定人脸区域
-    return;
-  }
-
-  swiperAutoPlay.value = false;
-  showFloatingTips.value = false;
-  console.log(face, "on select face");
-  // 设置templateFaceMappingList对应模板的对应人脸关系
-  const templateItem = templateFaceMappingList.value.find(
-    (item) => item.up_file_id == currTemplate.value.up_file_id
-  );
-  // templateItem.mapping 对象的key是人脸id，value是avatar的face_id。其他key设置为null
-  for (const key in templateItem.mapping) {
-    if (key == face.id) {
-      templateItem.mapping[key] = selectedAvatar.value?.face_id || null;
-    } else {
-      templateItem.mapping[key] = null;
-    }
-  }
-  console.log("updated tempateMapping", templateFaceMappingList.value);
-};
-
 // 获取主题
 const getTheme = () => {
   return imageMode.value === "gallary" ? "gallaryTheme" : "portraitTheme";
-};
-
-const swiperAutoPlay = ref(true);
-// 处理滑块变化
-const currTemplateIndex = ref(0);
-const handleSwiperChange = (e) => {
-  currTemplateIndex.value = e.detail.current;
-  if (userDraft.value.is_collection) {
-    return;
-  }
-  selectedAvatar.value = templateSelectedAvatar[currTemplate.value.up_file_id];
 };
 
 // 当前预览的模板
@@ -473,29 +350,6 @@ const currTemplate = computed(() => {
   return userDraft.value.template;
 });
 console.log("currTemplate", currTemplate.value);
-
-// 初始化模板人脸映射列表
-const templateFaceMappingList = ref([]);
-const initTemplateFaceMappingList = () => {
-  return;
-  userDraft.value.templates.forEach((template) => {
-    templateFaceMappingList.value.push(
-      new DraftType.TemplateFaceMappingItem({
-        up_file_id: template.up_file_id,
-        mapping: {},
-      })
-    );
-    template.face_list.forEach((face) => {
-      templateFaceMappingList.value.find(
-        (item) => item.up_file_id === template.up_file_id
-      ).mapping[face.id] =
-        selectedAvatar.value.face_id && face.is_default
-          ? selectedAvatar.value.face_id
-          : null;
-    });
-  });
-  console.log("templateFaceMappingList", templateFaceMappingList.value);
-};
 
 // 提交绘图任务
 const onSubmit = async () => {
