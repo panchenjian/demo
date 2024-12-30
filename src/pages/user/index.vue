@@ -24,56 +24,19 @@
     >
       <view v-for="(item, index) in orderList" :key="index" class="item">
         <view class="orderWrap" @tap="$debounceClick(handleBtnClick)(item)">
-          <view
-            class="singlePicPreviewWrap"
-            v-if="item.result_images && item.result_images.length == 1"
-          >
+          <view class="singlePicPreviewWrap">
             <view class="picWrap">
               <image
                 mode="aspectFill"
                 class="pic"
-                :src="ossBaseUrl + '/' + item.result_images[0]"
+                :src="item.result_image"
               ></image>
             </view>
-          </view>
-          <view v-else class="picPreviewWrap">
-            <template v-for="(url, i) in getPreviewImgList(item)" :key="i">
-              <view class="picWrap">
-                <image mode="aspectFill" class="pic" :src="url"></image>
-              </view>
-            </template>
           </view>
           <view class="orderInfoWrap">
             <view class="orderDate">{{ item.create_time }}</view>
             <view class="orderTitle">{{ getOrderDescribe(item) }}</view>
           </view>
-          <text
-            v-if="item.status == 3"
-            class="errorOrderTip"
-            :style="$getMediumFontWeight()"
-            >{{ t("user-index.error-order-label") }}</text
-          >
-          <!-- <button v-if="item.status == 2" class="orderBtn" @tap="$debounceClick(goToConcat)(item)">点击查看</button> -->
-          <button v-if="item.status == 2" class="orderBtn">
-            {{ t("user-index.order-btn") }}
-          </button>
-          <button v-if="item.status == 1" class="orderBtn">
-            {{ t("user-index.order-btn.generating") }}
-          </button>
-          <button
-            v-if="item.status == 3"
-            class="orderBtn btnError"
-            @tap="$debounceClick(goToConcat)(item)"
-          >
-            {{ t("user-index.order-btn.error") }}
-          </button>
-          <button
-            v-if="item.status == 4"
-            class="orderBtn reUpload"
-            @tap="$debounceClick(goToReUploadPage)(item)"
-          >
-            {{ t("user-index.order-btn.reupload") }}
-          </button>
         </view>
       </view>
       <view v-if="isTotallyLoaded && orderList.length >= 8" class="listTips">{{
@@ -88,20 +51,15 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import { getMyGalleryList } from "../../api/lunaDraw.js";
-import { saveDrawingDraft } from "../../utils/common";
+import { userRecords } from "../../api/lunaDraw.js";
 import customerServiceButton from "../../components/customerServiceButton.vue";
-import {
-  defaultLoadingTitle,
-  LUNA_OSS_BASE_URL,
-} from "../../common/variable.js";
+import { defaultLoadingTitle } from "../../common/variable.js";
 import { AblumStore } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
 
 const store = useStore();
 const { t } = useI18n();
 
-const ossBaseUrl = LUNA_OSS_BASE_URL;
 const orderList = ref([]);
 const perPage = ref(10);
 const total = ref(10);
@@ -157,45 +115,15 @@ const onRefresh = () => {
 const onRestore = () => {
   isRefresherTriggered.value = "restore";
 };
-
-const goToConcat = (item) => {
-  const { sn: orderID } = item.order || {};
-  uni.navigateTo({
-    url: "/pages/user/contact?orderID=" + encodeURIComponent(orderID),
-  });
-};
-
-const getOrderDescribe = (item) => {
-  return item.draw_number + "张换脸";
-};
-
-const getPreviewImgList = (imgInfo) => {
-  if (!imgInfo.result_images) {
-    return new Array(4);
-  }
-  const res = imgInfo.result_images
-    .slice(0, 4)
-    .map((item) => ossBaseUrl + "/" + item);
-  while (res.length < 4) {
-    res.push({});
-  }
-  return res;
-};
-
-const goToReUploadPage = (item) => {
-  saveDrawingDraft({
-    ...item.user_draft,
-  });
-  uni.navigateTo({
-    url: "/pages/draw/reUpload",
-  });
+const getOrderDescribe = () => {
+  return "1张换脸";
 };
 
 const fetchGalleryList = (showLoading = true, reset) => {
   if (showLoading) {
     uni.showLoading({ title: defaultLoadingTitle });
   }
-  return getMyGalleryList(
+  return userRecords(
     {
       page: curPage.value + 1,
       per_page: perPage.value,
@@ -213,12 +141,12 @@ const fetchGalleryList = (showLoading = true, reset) => {
         return;
       }
       console.log("res = ", res);
-      const { data, current_page, last_page } = res.data;
-      if (current_page >= last_page) {
+      const data = res.data.lists;
+      if (data.length < perPage.value) {
         console.log("end");
         isTotallyLoaded.value = true;
       }
-      curPage.value = current_page;
+      curPage.value += 1;
       if (reset) {
         orderList.value = data;
       } else {
@@ -238,13 +166,11 @@ const loadMore = () => {
 };
 
 const handleBtnClick = (item) => {
-  if (item.status == 2 || item.status == 1) {
-    goToDetail(item);
-  }
+  goToDetail(item);
 };
 
 const goToDetail = (item) => {
-  AblumStore.setUpTaskId(store, item.up_task_id);
+  AblumStore.setTaskId(store, item.id);
   uni.navigateTo({
     url: "/pages/user/photoAlbum",
   });

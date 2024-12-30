@@ -11,12 +11,12 @@ export const AblumType = {
   },
   Ablum: class {
     /**
-     * @param upTaskId 上传任务ID
+     * @param taskId 上传任务ID
      * @param previewImageIndex 预览图片索引
      * @param {Array<AblumType.ImageItem>} imageList 图片列表
      */
-    constructor({ upTaskId, previewImageIndex, imageList }) {
-      this.upTaskId = upTaskId;
+    constructor({ taskId, previewImageIndex, imageList }) {
+      this.taskId = taskId;
       this.previewImageIndex = previewImageIndex;
       this.imageList = imageList;
     }
@@ -24,13 +24,13 @@ export const AblumType = {
 };
 
 export const AblumStore = {
-  setUpTaskId(store, upTaskId) {
+  setTaskId(store, taskId) {
     store.commit("updateBrowseringAlbumDetail", {
-      upTaskId,
+      taskId,
     });
   },
-  getUpTaskId(store) {
-    return store.state.browseringAlbumDetail.upTaskId;
+  getTaskId(store) {
+    return store.state.browseringAlbumDetail.taskId;
   },
 
   /**

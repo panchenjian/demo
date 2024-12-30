@@ -33,13 +33,7 @@
     {
       "path": "pages/draw/confirm",
       "style": {
-        "navigationBarTitleText": "制作照片 2/3"
-      }
-    },
-    {
-      "path": "pages/draw/generate",
-      "style": {
-        "navigationBarTitleText": "制作照片 3/3"
+        "navigationBarTitleText": "制作照片"
       }
     },
     {

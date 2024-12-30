@@ -62,7 +62,7 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import { pollTaskStatus } from "../../api/lunaDraw";
+import { recordDetail } from "../../api/lunaDraw";
 import { requestAuthThenSaveImages } from "../../utils/common";
 import { LUNA_OSS_BASE_URL } from "../../common/variable";
 import { AblumStore, AblumType } from "../../store/album";
@@ -95,10 +95,9 @@ const sortPhoto = (originArr) => {
 
 onLoad(async (option) => {
   fromPage.value = option.from;
-
-  const currUptaskId = AblumStore.getUpTaskId(store);
-  if (currUptaskId) {
-    const res = await pollTaskStatus(currUptaskId);
+  const currTaskId = AblumStore.getTaskId(store);
+  if (currTaskId) {
+    const res = await recordDetail(currTaskId);
     if (res.code === 1) {
       const imageListData = res.data.upstream_resp.messageList.map((item) => {
         return new AblumType.ImageItem({

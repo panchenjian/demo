@@ -1,10 +1,6 @@
 import request, { baseUrl, requireLogin } from "../utils/request";
 
-export function getMyGalleryList(data, preventLoading) {
-  if (!data.only_thumb) {
-    data.only_thumb = 1;
-  }
-
+export function userRecords(data, preventLoading) {
   return request({
     url: "/api/face_swap/user_records",
     method: "GET",
@@ -46,11 +42,11 @@ export function createSwap(data) {
   return request(params);
 }
 
-export function pollTaskStatus(upTaskId) {
+export function recordDetail(taskId) {
   return request({
-    url: "/api/lunaDraw/taskStatusV3",
+    url: "/api/face_swap/record_detail",
     method: "GET",
-    data: { up_task_id: upTaskId },
+    data: { id: taskId },
     preventLoading: true,
   });
 }
