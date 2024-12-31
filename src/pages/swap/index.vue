@@ -19,7 +19,7 @@
               :key="index"
             >
               <image
-                :src="el.image_url"
+                :src="el.target_image"
                 mode="aspectFill"
                 @tap="handleMoreClick(group)"
                 :lazy-load="true"
@@ -45,10 +45,6 @@ const groupList = computed(() => {
 });
 const handleMoreClick = (group) => {
   DraftStore.resetTemplate(store);
-  // todo 根据玩法信息动态设置
-  DraftStore.setStrategyId(store, 2);
-  DraftStore.setIsCollection(store, 0);
-  DraftStore.setRandomCandidateCnt(store, 0);
 
   store.commit("setBrowseringGroupDetail", {
     groupId: group.id,
