@@ -28,6 +28,7 @@
             class="image-wrapper"
             v-for="(item, index) in leftList"
             :key="index"
+            @tap="$debounceClick(goToDetail)(item)"
           >
             <image
               :src="item.result_image"
@@ -48,6 +49,7 @@
             class="image-wrapper"
             v-for="(item, index) in rightList"
             :key="index"
+            @tap="$debounceClick(goToDetail)(item)"
           >
             <image
               :src="item.result_image"
@@ -79,7 +81,7 @@ import { useI18n } from "vue-i18n";
 import { userRecords } from "../../api/lunaDraw.js";
 import customerServiceButton from "../../components/customerServiceButton.vue";
 import { defaultLoadingTitle } from "../../common/variable.js";
-import { AblumStore } from "../../store/album";
+import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
 
 const store = useStore();
@@ -157,9 +159,6 @@ const onRefresh = () => {
 const onRestore = () => {
   isRefresherTriggered.value = "restore";
 };
-const getOrderDescribe = () => {
-  return "1张换脸";
-};
 
 const fetchGalleryList = (showLoading = true, reset) => {
   if (showLoading) {
@@ -208,14 +207,15 @@ const loadMore = () => {
   fetchGalleryList();
 };
 
-const handleBtnClick = (item) => {
-  goToDetail(item);
-};
-
 const goToDetail = (item) => {
-  AblumStore.setTaskId(store, item.id);
+  AblumStore.setImageList(store, [
+    new AblumType.ImageItem({
+      result_image: item.result_image,
+      template_name: "模板名称TODO",
+    }),
+  ]);
   uni.navigateTo({
-    url: "/pages/user/photoAlbum",
+    url: "/pages/draw/detail",
   });
 };
 </script>

@@ -1,10 +1,7 @@
 <template>
   <view :class="getTheme()" class="content">
     <view class="pageNumTips" :style="$getMediumFontWeight()">
-      <text v-if="!isDarkTheme" class="currGroupName">{{
-        currentGroupName
-      }}</text>
-      {{ currentPage + 1 }}/{{ resultImageList.length }}
+      <text class="currTemplateName">{{ currentTemplateName }}</text>
     </view>
     <swiper
       class="swiperWrap"
@@ -30,7 +27,7 @@
     <view class="toolBar">
       <view class="toolBarItemWrap">
         <button class="btnWrap" open-type="share">
-          <image :src="isDarkTheme ? greyShareIcon : blackShareIcon"></image>
+          <image :src="blackShareIcon"></image>
           <text class="" :style="$getMediumFontWeight()">{{
             t("draw-detail.share-btn")
           }}</text>
@@ -44,9 +41,7 @@
           ])
         "
       >
-        <image
-          :src="isDarkTheme ? greyDownloadIcon : blackDownloadIcon"
-        ></image>
+        <image :src="blackDownloadIcon"></image>
         <text class="" :style="$getMediumFontWeight()">{{
           t("draw-detail.download-btn")
         }}</text>
@@ -59,16 +54,8 @@
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import {
-  requestAuthThenSaveImages,
-  setTopNavBar2DarkTheme,
-} from "../../utils/common";
-import {
-  blackDownloadIcon,
-  blackShareIcon,
-  greyDownloadIcon,
-  greyShareIcon,
-} from "../../common/svgBase64";
+import { requestAuthThenSaveImages } from "../../utils/common";
+import { blackDownloadIcon, blackShareIcon } from "../../common/svgBase64";
 import { defaultLoadingTitle } from "../../common/variable.js";
 import { osName } from "../../context.js";
 import { AblumStore } from "../../store/album";
@@ -81,24 +68,18 @@ const { t } = useI18n();
 const resultImageList = ref([]);
 
 const currentPage = ref(0);
-const currentGroupName = computed(() => {
-  return resultImageList.value[currentPage.value]?.groupName;
+const currentTemplateName = computed(() => {
+  return resultImageList.value[currentPage.value]?.template_name;
 });
 
 const photoAlbumType = ref("");
 const hasAlbumWritePermission = ref(true);
-
-// 计算属性
-const isDarkTheme = computed(() => photoAlbumType.value === "gallary");
 
 // 页面生命周期钩子
 onLoad(() => {
   photoAlbumType.value = "";
   resultImageList.value = AblumStore.getImageList(store);
   currentPage.value = AblumStore.getPreviewImageIndex(store) || 0;
-  if (photoAlbumType.value === "gallary") {
-    setTopNavBar2DarkTheme();
-  }
 });
 
 onShareAppMessage(() => {
@@ -281,7 +262,7 @@ const previewImageonAndriod = (imageUrl) => {
   background: #dfdfdf;
 }
 
-.currGroupName {
+.currTemplateName {
   margin-right: 16rpx;
 }
 
