@@ -24,9 +24,10 @@
             >
               <image
                 :src="template.target_image"
+                mode="widthFix"
                 :style="{
                   width: `${renderWidth}rpx`,
-                  height: `${renderHeight}rpx`,
+                  height: 'auto',
                   borderRadius: '8px',
                 }"
               />
@@ -765,6 +766,10 @@ const onSubmit = async () => {
   width: 100%;
   height: 100%;
   position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .template-desc {
     position: absolute;

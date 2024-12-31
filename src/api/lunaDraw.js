@@ -38,7 +38,7 @@ export function createSwap(data) {
     method: "POST",
     data: data,
   };
-  params.loadingToastTips = "正在炼丹，即将完成~";
+  params.loadingToastTips = "AI生成中...";
   return request(params);
 }
 

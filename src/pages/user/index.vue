@@ -22,20 +22,33 @@
       @refresherrestore="onRestore"
       @scrolltolower="loadMore"
     >
-      <view v-for="(item, index) in orderList" :key="index" class="item">
-        <view class="orderWrap" @tap="$debounceClick(handleBtnClick)(item)">
-          <view class="singlePicPreviewWrap">
-            <view class="picWrap">
-              <image
-                mode="aspectFill"
-                class="pic"
-                :src="item.result_image"
-              ></image>
-            </view>
+      <view class="list">
+        <view class="left-image-list-wrapper image-list-wrapper">
+          <view
+            class="image-wrapper"
+            v-for="(item, index) in leftList"
+            :key="index"
+          >
+            <image
+              :src="item.result_image"
+              mode="widthFix"
+              :lazy-load="true"
+              @tap="onSelectTemplate(item)"
+            ></image>
           </view>
-          <view class="orderInfoWrap">
-            <view class="orderDate">{{ item.create_time }}</view>
-            <view class="orderTitle">{{ getOrderDescribe(item) }}</view>
+        </view>
+        <view class="image-list-wrapper">
+          <view
+            class="image-wrapper"
+            v-for="(item, index) in rightList"
+            :key="index"
+          >
+            <image
+              :src="item.result_image"
+              mode="widthFix"
+              :lazy-load="true"
+              @tap="onSelectTemplate(item)"
+            ></image>
           </view>
         </view>
       </view>
@@ -48,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { userRecords } from "../../api/lunaDraw.js";
@@ -61,6 +74,17 @@ const store = useStore();
 const { t } = useI18n();
 
 const orderList = ref([]);
+
+const leftList = computed(() => {
+  if (!orderList.value) return [];
+  return orderList.value.filter((_, index) => index % 2 === 0);
+});
+
+const rightList = computed(() => {
+  if (!orderList.value) return [];
+  return orderList.value.filter((_, index) => index % 2 !== 0);
+});
+
 const perPage = ref(10);
 const total = ref(10);
 const curPage = ref(0);
@@ -146,11 +170,12 @@ const fetchGalleryList = (showLoading = true, reset) => {
         console.log("end");
         isTotallyLoaded.value = true;
       }
-      curPage.value += 1;
       if (reset) {
         orderList.value = data;
+        curPage.value = 1;
       } else {
         orderList.value = orderList.value.concat(data);
+        curPage.value = curPage.value + 1;
       }
     })
     .catch((err) => {
@@ -178,6 +203,8 @@ const goToDetail = (item) => {
 </script>
 
 <style lang="scss" scoped>
+@import "@/common/variable.scss";
+
 .content {
   height: 100%;
 }
@@ -203,10 +230,13 @@ const goToDetail = (item) => {
 }
 
 .scrollView {
-  height: 100%;
-  margin: 0 40rpx;
-  width: auto;
+  height: 100vh;
+  background-size: 100%;
+  flex-flow: column;
+  overflow: hidden;
   box-sizing: border-box;
+  padding: 12px 0;
+  display: flex;
 }
 
 .item:first-child {
@@ -357,5 +387,69 @@ const goToDetail = (item) => {
   font-size: 14px;
   margin-top: 48rpx;
   padding-bottom: 66rpx;
+}
+
+.list {
+  display: flex;
+  justify-content: space-between;
+  overflow: auto;
+
+  .image-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 32rpx;
+  }
+
+  .image-wrapper {
+    position: relative;
+    margin-bottom: 2px;
+    image {
+      width: 324rpx;
+      border-radius: 8px;
+      background: $image-skeleton-background-pink-font-size-14;
+    }
+
+    text {
+      position: absolute;
+      text-align: start;
+      left: 8px;
+      bottom: 8px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 16px; /* 100% */
+      letter-spacing: 1px;
+      z-index: 3;
+    }
+  }
+
+  .image-wrapper::before {
+    position: absolute;
+    bottom: 0;
+    height: 62px;
+    border-radius: 8px;
+    content: "";
+    left: 0;
+    right: 0;
+    z-index: 2;
+  }
+
+  .left-image-list-wrapper {
+    padding-left: 32rpx;
+    padding-right: 0;
+    .image-wrapper:nth-child(odd) {
+      image {
+        width: 330rpx;
+      }
+    }
+
+    .image-wrapper:nth-child(even) {
+      image {
+        width: 324rpx;
+        height: 206px;
+      }
+    }
+  }
 }
 </style>
