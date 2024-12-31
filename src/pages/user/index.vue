@@ -35,6 +35,12 @@
               :lazy-load="true"
               @tap="onSelectTemplate(item)"
             ></image>
+            <view class="result-desc">
+              <view class="result-date">{{
+                formatDate(item.create_time)
+              }}</view>
+              <view></view>
+            </view>
           </view>
         </view>
         <view class="image-list-wrapper">
@@ -49,6 +55,12 @@
               :lazy-load="true"
               @tap="onSelectTemplate(item)"
             ></image>
+            <view class="result-desc">
+              <view class="result-date">{{
+                formatDate(item.create_time)
+              }}</view>
+              <view></view>
+            </view>
           </view>
         </view>
       </view>
@@ -84,6 +96,12 @@ const rightList = computed(() => {
   if (!orderList.value) return [];
   return orderList.value.filter((_, index) => index % 2 !== 0);
 });
+
+const formatDate = (date) => {
+  const dateRaw = date.split(" ")[0];
+  const [year, month, day] = dateRaw.split("-");
+  return `${year}年${month}月${day}日`;
+};
 
 const perPage = ref(10);
 const total = ref(10);
@@ -421,6 +439,26 @@ const goToDetail = (item) => {
       line-height: 16px; /* 100% */
       letter-spacing: 1px;
       z-index: 3;
+    }
+
+    .result-desc {
+      height: 36rpx;
+      z-index: 2;
+      border-radius: 0 0 8px 8px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      color: #000;
+      background-color: #f4f4f4;
+      gap: 2px;
+      padding: 8px;
+
+      .result-date {
+        font-size: 12px;
+        font-weight: 300;
+      }
     }
   }
 
