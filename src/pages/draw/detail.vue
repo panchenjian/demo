@@ -6,15 +6,18 @@
     <swiper
       class="swiperWrap"
       :current="currentPage"
-      height="100%"
       :autoplay="false"
       @change="handleSwiperChange"
     >
-      <swiper-item v-for="(item, index) in resultImageList" :key="index">
+      <swiper-item
+        v-for="(item, index) in resultImageList"
+        :key="index"
+        class="swiper-item"
+      >
         <view class="result-image-wrap">
           <image
             :src="item.result_image"
-            mode="aspectFill"
+            mode="widthFix"
             class="result-image"
             @tap="$debounceClick(handleClickImage)(item)"
           ></image>
@@ -276,13 +279,15 @@ const previewImageonAndriod = (imageUrl) => {
 
 .swiper-item {
   border-radius: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .result-image {
   margin: 0 56rpx 0;
-  width: 100%;
+  width: 620rpx;
   box-sizing: border-box;
-  height: 912rpx;
   border-radius: 8px;
   display: block;
   background: $image-skeleton-background-pink-font-size-20;
