@@ -19,7 +19,7 @@
               'tag-item ' +
               (group.id == selectedGroup?.id ? 'tag-selected' : '')
             "
-            @tap="$debounceClick(onSelectGroup)(group)"
+            @tap="onSelectGroup(group)"
           >
             {{ index == 0 ? `🔥 ` : "" }}{{ group.name }}
           </view>
@@ -113,8 +113,8 @@ const onClickNextStep = () => {
   });
 };
 
-const onSelectGroup = (tag) => {
-  selectedGroup.value = tag;
+const onSelectGroup = (group) => {
+  selectedGroup.value = group;
   const nextPage = groupList.value.findIndex(
     (item) => item.id == selectedGroup.value?.id
   );
