@@ -89,6 +89,9 @@ export default {
     this.redirect = decodeURIComponent(option.redirect);
     this.delta = decodeURIComponent(option.delta);
     this.redirectTab = decodeURIComponent(option.redirectTab);
+    console.log("onload redirect", this.redirect);
+    console.log("onload delta", this.delta);
+    console.log("onload redirectTab", this.redirectTab);
     getPolicy({
       type: "privacy",
     }).then((res) => {
@@ -160,9 +163,10 @@ export default {
           url: this.redirect,
         });
       } else {
-        // uni.switchTab({
-        //     url: "/pages/index/index"
-        // })
+        console.log("fall back to index page");
+        uni.switchTab({
+          url: "/pages/index/index",
+        });
       }
     },
     requestAuthLogin(provider) {
