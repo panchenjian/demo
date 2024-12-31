@@ -89,7 +89,7 @@ onShareAppMessage(() => {
   const img = resultImageList.value[currentPage.value];
   return {
     title: t("api-share.moment-title.default"),
-    path: "/pages/draw/portrait",
+    path: "/pages/index/index",
     imageUrl: img.result_image,
   };
 });

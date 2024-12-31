@@ -1,13 +1,13 @@
 {
   "pages": [
     {
-      "path": "pages/draw/bootstrap",
+      "path": "pages/index/bootstrap",
       "style": {
         "navigationBarTitleText": ""
       }
     },
     {
-      "path": "pages/draw/portrait",
+      "path": "pages/index/index",
       "style": {
         "navigationBarTitleText": "Luna AI写真"
       }
@@ -19,7 +19,7 @@
       }
     },
     {
-      "path": "pages/swap/templateList",
+      "path": "pages/swap/template",
       "style": {
         "navigationBarTitleText": "换脸模板"
       }
@@ -37,7 +37,7 @@
       }
     },
     {
-      "path": "pages/draw/detail",
+      "path": "pages/draw/result",
       "style": {
         "navigationBarTitleText": "专属肖像"
       }
@@ -74,7 +74,7 @@
     "backgroundColor": "#F5F6F7",
     "list": [
       {
-        "pagePath": "pages/draw/portrait",
+        "pagePath": "pages/index/index",
         "iconPath": "static/tabbar-icon-portrait.png",
         "selectedIconPath": "static/tabbar-icon-portrait-hl.png",
         "text": "写真"

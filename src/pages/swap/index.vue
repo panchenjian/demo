@@ -52,7 +52,7 @@ const handleMoreClick = (group) => {
     templateList: group.templates,
   });
   uni.navigateTo({
-    url: `/pages/swap/templateList`,
+    url: `/pages/swap/template`,
   });
 };
 

@@ -381,7 +381,7 @@ const onSubmit = async () => {
     }),
   ]);
   uni.navigateTo({
-    url: "/pages/draw/detail",
+    url: "/pages/draw/result",
   });
 };
 </script>

@@ -48,7 +48,7 @@ onLoad(() => {
 
   setTimeout(() => {
     uni.switchTab({
-      url: "/pages/draw/portrait",
+      url: "/pages/index/index",
     });
   }, 2000);
 });

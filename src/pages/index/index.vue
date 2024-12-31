@@ -139,7 +139,7 @@ const handleSwiperChange = (current) => {
 onShareAppMessage(() => {
   return {
     title: "Luna AI写真",
-    path: "/pages/draw/portrait",
+    path: "/pages/index/index",
   };
 });
 </script>

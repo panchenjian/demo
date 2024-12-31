@@ -161,7 +161,7 @@ export default {
         });
       } else {
         // uni.switchTab({
-        //     url: "/pages/draw/portrait"
+        //     url: "/pages/index/index"
         // })
       }
     },

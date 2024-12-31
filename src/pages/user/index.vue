@@ -215,7 +215,7 @@ const goToDetail = (item) => {
     }),
   ]);
   uni.navigateTo({
-    url: "/pages/draw/detail",
+    url: "/pages/draw/result",
   });
 };
 </script>
