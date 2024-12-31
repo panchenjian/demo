@@ -23,16 +23,6 @@ export function mnpLogin(data) {
   });
 }
 
-// 抖音小程序登录
-export function douyinMnpLogin(data) {
-  return request({
-    url: "/api/login/douyinMnpLogin",
-    method: "POST",
-    data,
-    loginRequired: false,
-  });
-}
-
 export function submitFeedback(data) {
   return request({
     url: "/api/feedback/add",

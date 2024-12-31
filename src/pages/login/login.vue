@@ -1,6 +1,5 @@
 <template>
   <view class="content">
-    <image class="mask-img" mode="widthFix" :src="maskImgSrc"></image>
     <view class="main">
       <image
         :src="logoIcon"
@@ -9,27 +8,13 @@
       ></image>
       <view class="title">{{ $t("draw-bootstrap.title") }}</view>
     </view>
-    <!-- #ifdef MP-WEIXIN  -->
     <button
       class="main-button main-btn"
-      :class="{ 'main-button-disabled': !agreeTerms }"
       :style="$getMediumFontWeight()"
       @tap="$debounceClick(requestAuthLogin)('weixin')"
     >
       微信授权登录
     </button>
-    <!-- #endif -->
-    <!-- #ifdef MP-TOUTIAO  -->
-    <button
-      class="main-button main-btn"
-      :class="{ 'main-button-disabled': !agreeTerms }"
-      :style="$getMediumFontWeight()"
-      @tap="$debounceClick(requestAuthLogin)('toutiao')"
-      data-eventsync="true"
-    >
-      抖音授权登录
-    </button>
-    <!-- #endif -->
     <view class="user-privacy-wrap">
       <checkbox-group @change="handleCheckboxChange">
         <checkbox
@@ -57,7 +42,7 @@
 </template>
 
 <script>
-import { douyinMnpLogin, mnpLogin } from "../../api/user";
+import { mnpLogin } from "../../api/user";
 import { getPolicy } from "../../api/faceSwap";
 import { logoIcon } from "../../common/svgBase64.js";
 import PrivacyDialog from "../../components/PrivacyDialog.vue";
@@ -65,8 +50,6 @@ import PrivacyDialog from "../../components/PrivacyDialog.vue";
 export default {
   data() {
     return {
-      title: "Hello",
-      providerList: [],
       agreeTerms: false,
       redirect: "",
       delta: 0,
@@ -74,8 +57,6 @@ export default {
       logoIcon,
       agreementContent: "",
       agreementTitle: "",
-      maskImgSrc:
-        "https://luna-frontend-static-resource.oss-cn-shenzhen.aliyuncs.com/bootstrap-bg.png",
       policy: {
         privacy: "",
         service: "",
@@ -86,17 +67,21 @@ export default {
     PrivacyDialog,
   },
   onLoad(option) {
+    uni.setNavigationBarColor({
+      frontColor: "#ffffff",
+      backgroundColor: "#f5f6f7",
+    });
+
     this.redirect = decodeURIComponent(option.redirect);
     this.delta = decodeURIComponent(option.delta);
     this.redirectTab = decodeURIComponent(option.redirectTab);
-    console.log("onload redirect", this.redirect);
-    console.log("onload delta", this.delta);
-    console.log("onload redirectTab", this.redirectTab);
+
     getPolicy({
       type: "privacy",
     }).then((res) => {
       this.policy.privacy = res?.data;
     });
+
     getPolicy({
       type: "service",
     }).then((res) => {
@@ -105,11 +90,7 @@ export default {
   },
   methods: {
     handleCheckboxChange(e) {
-      if (e.detail.value.length > 0) {
-        this.agreeTerms = true;
-      } else {
-        this.agreeTerms = false;
-      }
+      this.agreeTerms = e.detail.value.length > 0;
     },
     showAgreement(type) {
       if (type === 1) {
@@ -123,17 +104,6 @@ export default {
     },
     closeDialog() {
       this.$refs.agreementDialog.close();
-    },
-    getUserProfile() {
-      // 获取用户资料 TODO
-      tt.getUserProfile({
-        success(res) {
-          console.log("success", res);
-        },
-        fail(res) {
-          console.log("fail", res);
-        },
-      });
     },
     onLoginSuccess(loginRes) {
       console.log(loginRes, "login res");
@@ -170,30 +140,22 @@ export default {
       }
     },
     requestAuthLogin(provider) {
-      if (!this.agreeTerms) return;
+      if (!this.agreeTerms) {
+        uni.showToast({
+          title: "请先勾选同意用户协议",
+          icon: "none",
+        });
+        return;
+      }
 
       uni.login({
         provider: provider,
         success: async (authRes) => {
-          // #ifdef MP-WEIXIN
           mnpLogin({ code: authRes.code })
             .then(this.onLoginSuccess)
             .catch((err) => {
               console.log(err);
             });
-          // #endif
-
-          // #ifdef MP-TOUTIAO
-          douyinMnpLogin({
-            code: authRes.code,
-            anonymousCode: authRes.anonymousCode,
-          })
-            .then(this.onLoginSuccess)
-            .catch((err) => {
-              console.log(err);
-            });
-          // #endif
-
           console.log(authRes);
         },
         fail: (err) => {
@@ -216,19 +178,11 @@ export default {
   position: relative;
   height: 100%;
   box-sizing: border-box;
+  background-color: #f5f6f7;
 
   .main-btn {
     bottom: 312rpx;
   }
-}
-
-.mask-img {
-  position: absolute;
-  top: 20rpx;
-  width: 100%;
-  height: 1250rpx;
-  z-index: -1;
-  opacity: 0.3;
 }
 
 .main {
