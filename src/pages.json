@@ -31,12 +31,6 @@
       }
     },
     {
-      "path": "pages/user/photoAlbum",
-      "style": {
-        "navigationBarTitleText": "专属肖像"
-      }
-    },
-    {
       "path": "pages/draw/result",
       "style": {
         "navigationBarTitleText": "专属肖像"
