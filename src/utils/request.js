@@ -7,7 +7,10 @@ export { baseUrl };
 uni.addInterceptor("request", {
   invoke(args) {
     !args.preventLoading &&
-      uni.showLoading({ title: args.loadingToastTips || defaultLoadingTitle });
+      uni.showLoading({
+        title: args.loadingToastTips || defaultLoadingTitle,
+        mask: true,
+      });
     // console.log(args, 'invoke')
     if (args.loginRequired) {
       const token = uni.getStorageSync("token");
