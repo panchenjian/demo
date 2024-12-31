@@ -34,7 +34,6 @@
               :src="item.result_image"
               mode="widthFix"
               :lazy-load="true"
-              @tap="onSelectTemplate(item)"
             ></image>
             <view class="result-desc">
               <view class="result-date">{{
@@ -55,7 +54,6 @@
               :src="item.result_image"
               mode="widthFix"
               :lazy-load="true"
-              @tap="onSelectTemplate(item)"
             ></image>
             <view class="result-desc">
               <view class="result-date">{{
