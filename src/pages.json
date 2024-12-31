@@ -1,12 +1,6 @@
 {
   "pages": [
     {
-      "path": "pages/index/bootstrap",
-      "style": {
-        "navigationBarTitleText": ""
-      }
-    },
-    {
       "path": "pages/index/index",
       "style": {
         "navigationBarTitleText": "Luna AI写真"
