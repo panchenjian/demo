@@ -211,7 +211,7 @@ const goToDetail = (item) => {
   AblumStore.setImageList(store, [
     new AblumType.ImageItem({
       result_image: item.result_image,
-      template_name: "模板名称TODO",
+      template_name: item.template_name,
     }),
   ]);
   uni.navigateTo({

@@ -362,12 +362,8 @@ const onSubmit = async () => {
   }
 
   const res = await createSwap({
-    target_image: userDraft.value.template.target_image,
-    user_image: selectedAvatar.value.user_image,
+    template_id: userDraft.value.template.id,
     avatar_id: selectedAvatar.value.id,
-    face_mapping: {
-      "T#0": "U#" + selectedAvatar.value.face_id,
-    },
   });
 
   if (res.code !== 1) {
@@ -381,7 +377,7 @@ const onSubmit = async () => {
   AblumStore.setImageList(store, [
     new AblumType.ImageItem({
       result_image: res.data.result.result_image,
-      template_name: "模板名称TODO",
+      template_name: userDraft.value.template.name,
     }),
   ]);
   uni.navigateTo({
