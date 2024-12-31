@@ -3,7 +3,7 @@
     <image class="mask-img" mode="widthFix" :src="maskImgSrc"></image>
     <view class="main">
       <image
-        :src="logaIcon"
+        :src="logoIcon"
         mode="aspectFit"
         style="width: 228rpx; height: 59rpx"
       ></image>
@@ -59,7 +59,7 @@
 <script>
 import { douyinMnpLogin, mnpLogin } from "../../api/user";
 import { getPolicy } from "../../api/faceSwap";
-import { logaIcon } from "../../common/svgBase64.js";
+import { logoIcon } from "../../common/svgBase64.js";
 import PrivacyDialog from "../../components/PrivacyDialog.vue";
 
 export default {
@@ -71,7 +71,7 @@ export default {
       redirect: "",
       delta: 0,
       redirectTab: "",
-      logaIcon,
+      logoIcon,
       agreementContent: "",
       agreementTitle: "",
       maskImgSrc:
