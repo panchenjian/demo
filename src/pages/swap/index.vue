@@ -70,7 +70,6 @@ onShareAppMessage(() => {
 .content {
   display: flex;
   height: 100vh;
-  // background: url('../../static/page-bg.jpg') repeat;
   background-size: 100%;
   flex-flow: column;
   overflow: hidden;
