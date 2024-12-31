@@ -194,7 +194,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { checkLogin } from "../../utils/common";
-import { createSwap, createAvatar } from "../../api/lunaDraw";
+import { createSwap, createAvatar } from "../../api/faceSwap";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { closeIcon } from "../../common/svgBase64";

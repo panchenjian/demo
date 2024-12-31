@@ -12,7 +12,7 @@
 import { customerServiceIcon } from "../common/svgBase64.js";
 
 export default {
-  name: "customerServiceButton",
+  name: "CustomerServiceButton",
   data() {
     return {
       x: 313,

@@ -7,7 +7,7 @@
         mode="aspectFit"
         style="width: 228rpx; height: 59rpx"
       ></image>
-      <text class="title">AI定妆照</text>
+      <text class="title">Swapping AI换脸</text>
     </view>
     <!-- #ifdef MP-WEIXIN  -->
     <button
@@ -58,7 +58,7 @@
 
 <script>
 import { douyinMnpLogin, mnpLogin } from "../../api/user";
-import { getPolicy } from "../../api/lunaDraw";
+import { getPolicy } from "../../api/faceSwap";
 import { logaIcon } from "../../common/svgBase64.js";
 import PrivacyDialog from "../../components/PrivacyDialog.vue";
 

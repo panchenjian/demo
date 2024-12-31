@@ -68,7 +68,7 @@
         t("user-index.to-bottom-tip")
       }}</view>
     </scroll-view>
-    <customerServiceButton />
+    <customer-service-button />
   </view>
 </template>
 
@@ -76,8 +76,8 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import { userRecords } from "../../api/lunaDraw.js";
-import customerServiceButton from "../../components/customerServiceButton.vue";
+import { userRecords } from "../../api/faceSwap.js";
+import CustomerServiceButton from "../../components/CustomerServiceButton.vue";
 import { defaultLoadingTitle } from "../../common/variable.js";
 import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
