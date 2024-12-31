@@ -19,12 +19,6 @@
       }
     },
     {
-      "path": "pages/test/index",
-      "style": {
-        "navigationBarTitleText": "Testing"
-      }
-    },
-    {
       "path": "pages/swap/templateList",
       "style": {
         "navigationBarTitleText": "换脸模板"
