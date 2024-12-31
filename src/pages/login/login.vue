@@ -7,7 +7,7 @@
         mode="aspectFit"
         style="width: 228rpx; height: 59rpx"
       ></image>
-      <text class="title">Swapping AI换脸</text>
+      <view class="title">{{ $t("draw-bootstrap.title") }}</view>
     </view>
     <!-- #ifdef MP-WEIXIN  -->
     <button
@@ -241,13 +241,12 @@ export default {
 
 .title {
   margin-top: 20rpx;
-  width: 228rpx;
   white-space: nowrap;
   color: #000;
   text-align: center;
   font-size: 12px;
   line-height: 36rpx;
-  letter-spacing: 34rpx;
+  letter-spacing: 2px;
 }
 
 .user-privacy-wrap {

@@ -30,11 +30,8 @@ const getOsName = () => {
 };
 
 const preloadData = async () => {
-  // 获取首页数据：玩法列表
   store.dispatch("fetchPortrait");
   store.dispatch("fetchSwap");
-  // store.dispatch("fetchFaceSwap");
-  // store.dispatch("fetchGallary");
 };
 
 getOsName();
@@ -57,7 +54,6 @@ onLoad(() => {
 <style>
 .content {
   height: 100%;
-  background: linear-gradient(136deg, #c465ff 0%, #874aff 100%);
   background: linear-gradient(180deg, #c465ff 0%, #874aff 100%);
   position: relative;
 }
@@ -81,6 +77,7 @@ onLoad(() => {
   flex-direction: column;
   position: absolute;
   align-items: center;
+  justify-content: center;
   left: 50%;
   transform: translate(-50%, 0);
   bottom: 204rpx;
@@ -88,12 +85,11 @@ onLoad(() => {
 }
 
 .title {
-  width: 228rpx;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.67);
   text-align: center;
   font-size: 12px;
   line-height: 36rpx;
-  letter-spacing: 34rpx;
+  letter-spacing: 2px;
 }
 </style>
