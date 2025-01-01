@@ -33,13 +33,18 @@
             <image
               :src="item.result_image"
               mode="widthFix"
+              class="result-image"
               :lazy-load="true"
             ></image>
             <view class="result-desc">
               <view class="result-date">{{
                 formatDate(item.create_time)
               }}</view>
-              <view></view>
+              <image
+                src="/static/delete-avatar-icon.svg"
+                class="delete-icon"
+                @tap.stop="$debounceClick(onRemoveRecord)(item)"
+              />
             </view>
           </view>
         </view>
@@ -53,13 +58,18 @@
             <image
               :src="item.result_image"
               mode="widthFix"
+              class="result-image"
               :lazy-load="true"
             ></image>
             <view class="result-desc">
               <view class="result-date">{{
                 formatDate(item.create_time)
               }}</view>
-              <view></view>
+              <image
+                src="/static/delete-avatar-icon.svg"
+                class="delete-icon"
+                @tap.stop="$debounceClick(onRemoveRecord)(item)"
+              />
             </view>
           </view>
         </view>
@@ -76,11 +86,12 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import { userRecords } from "../../api/faceSwap.js";
+import { removeRecord, userRecords } from "../../api/faceSwap.js";
 import CustomerServiceButton from "../../components/CustomerServiceButton.vue";
 import { defaultLoadingTitle } from "../../common/variable.js";
 import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
+import { removeDigitalAvatar } from "../../api/digitalAvatar";
 
 const store = useStore();
 const { t } = useI18n();
@@ -96,6 +107,35 @@ const rightList = computed(() => {
   if (!orderList.value) return [];
   return orderList.value.filter((_, index) => index % 2 !== 0);
 });
+
+const onRemoveRecord = (item) => {
+  uni.showModal({
+    content: "是否删除该记录？",
+    confirmText: "确认删除",
+    confirmColor: "#FF0000",
+    success: function (res) {
+      if (res.confirm) {
+        console.log("确认删除");
+        removeRecord(item.id).then((res) => {
+          if (res.code != 1) {
+            uni.showToast({
+              title: res.msg || t("api-toast.server-error"),
+              icon: "none",
+            });
+            return;
+          }
+          uni.showToast({
+            title: "已删除",
+            icon: "success",
+          });
+          orderList.value = orderList.value.filter((i) => i.id !== item.id);
+        });
+      } else if (res.cancel) {
+        console.log("用户点击取消");
+      }
+    },
+  });
+};
 
 const formatDate = (date) => {
   const dateRaw = date.split(" ")[0];
@@ -268,7 +308,7 @@ const goToDetail = (item) => {
   height: 232rpx;
   // width: 100%;
   box-sizing: border-box;
-  padding: 28rpx 24rpx;
+  padding: 40rpx 24rpx;
   background: #f6f0ff;
   border-radius: 8px;
   margin-bottom: 40rpx;
@@ -326,7 +366,7 @@ const goToDetail = (item) => {
   font-size: 12px;
   color: #ffb5cf;
   right: 30rpx;
-  top: 28rpx;
+  top: 40rpx;
 }
 
 .picPreviewWrap {
@@ -420,7 +460,8 @@ const goToDetail = (item) => {
   .image-wrapper {
     position: relative;
     margin-bottom: 2px;
-    image {
+
+    .result-image {
       width: 324rpx;
       border-radius: 8px;
       background: $image-skeleton-background-pink-font-size-14;
@@ -445,9 +486,9 @@ const goToDetail = (item) => {
       border-radius: 0 0 8px 8px;
       font-size: 12px;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       color: #000;
       background-color: #f4f4f4;
       gap: 2px;
@@ -456,6 +497,15 @@ const goToDetail = (item) => {
       .result-date {
         font-size: 12px;
         font-weight: 300;
+      }
+
+      .delete-icon {
+        width: 14px;
+        height: 14px;
+        background: rgba(244, 67, 54, 0.52);
+        border-radius: 50%;
+        padding: 2px;
+        z-index: 999;
       }
     }
   }
@@ -475,13 +525,13 @@ const goToDetail = (item) => {
     padding-left: 32rpx;
     padding-right: 0;
     .image-wrapper:nth-child(odd) {
-      image {
+      .result-image {
         width: 330rpx;
       }
     }
 
     .image-wrapper:nth-child(even) {
-      image {
+      .result-image {
         width: 324rpx;
         height: 206px;
       }

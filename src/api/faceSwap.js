@@ -12,6 +12,15 @@ export function userRecords(data, preventLoading) {
   });
 }
 
+export function removeRecord(recordId) {
+  return request({
+    url: "/api/face_swap/remove_record",
+    method: "POST",
+    data: { id: recordId },
+    preventLoading: true,
+  });
+}
+
 export function createAvatar(filePath) {
   const token = uni.getStorageSync("token");
 
