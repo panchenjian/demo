@@ -508,7 +508,7 @@ const goToDetail = (item) => {
       .delete-icon {
         width: 14px;
         height: 14px;
-        background: rgba(244, 67, 54, 0.52);
+        background: rgba(239, 83, 80, 0.78);
         border-radius: 50%;
         padding: 2px;
         z-index: 999;
