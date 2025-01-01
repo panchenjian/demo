@@ -27,8 +27,9 @@
           <view
             class="image-wrapper"
             v-for="(item, index) in leftList"
-            :key="index"
+            :key="item.id || index"
             @tap="$debounceClick(goToDetail)(item)"
+            :animation="item.animationData"
           >
             <image
               :src="item.result_image"
@@ -52,8 +53,9 @@
           <view
             class="image-wrapper"
             v-for="(item, index) in rightList"
-            :key="index"
+            :key="item.id || index"
             @tap="$debounceClick(goToDetail)(item)"
+            :animation="item.animationData"
           >
             <image
               :src="item.result_image"
@@ -91,7 +93,6 @@ import CustomerServiceButton from "../../components/CustomerServiceButton.vue";
 import { defaultLoadingTitle } from "../../common/variable.js";
 import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
-import { removeDigitalAvatar } from "../../api/digitalAvatar";
 
 const store = useStore();
 const { t } = useI18n();
@@ -115,21 +116,26 @@ const onRemoveRecord = (item) => {
     confirmColor: "#FF0000",
     success: function (res) {
       if (res.confirm) {
-        console.log("确认删除");
-        removeRecord(item.id).then((res) => {
-          if (res.code != 1) {
-            uni.showToast({
-              title: res.msg || t("api-toast.server-error"),
-              icon: "none",
-            });
-            return;
-          }
-          uni.showToast({
-            title: "已删除",
-            icon: "success",
-          });
-          orderList.value = orderList.value.filter((i) => i.id !== item.id);
+        // 过渡动画
+        const animation = uni.createAnimation({
+          duration: 300,
+          timingFunction: "ease",
         });
+        animation.opacity(0).scale(0.8).step();
+        item.animationData = animation.export();
+        setTimeout(() => {
+          // 删除记录
+          removeRecord(item.id).then((res) => {
+            if (res.code != 1) {
+              uni.showToast({
+                title: res.msg || t("api-toast.server-error"),
+                icon: "none",
+              });
+              return;
+            }
+            orderList.value = orderList.value.filter((i) => i.id !== item.id);
+          });
+        }, 300);
       } else if (res.cancel) {
         console.log("用户点击取消");
       }
