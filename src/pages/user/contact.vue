@@ -1,21 +1,6 @@
 <template>
   <view class="content">
     <view class="form-item">
-      <view v-if="orderID" class="errorOrderWrap">
-        <text :style="$getMediumFontWeight()">{{
-          $t("user-contact.orderNO-label.error") + orderID
-        }}</text>
-      </view>
-      <!-- #ifdef MP-TOUTIAO  -->
-      <button
-        open-type="im"
-        @im="onImSuccess"
-        @error="onImError"
-        :data-im-id="customerServiceImId"
-      >
-        联系在线客服
-      </button>
-      <!-- #endif  -->
       <view class="label">{{ $t("user-contact.feedback-content-title") }}</view>
       <view>
         <textarea
@@ -27,7 +12,7 @@
         />
       </view>
     </view>
-    <view class="uploadListWrap">
+    <view class="uploadListWrap" v-if="showUploader">
       <view
         v-for="(img, index) in userFilePath"
         :key="index"
@@ -90,13 +75,9 @@ export default {
       contact: "",
       userFilePath: [],
       maxImageNum: 5,
-      orderID: "",
       closeIcon,
-      customerServiceImId: "freddyzhou", // TODO 客服抖音号 需要在后台绑定
+      showUploader: false,
     };
-  },
-  onLoad(option) {
-    this.orderID = option.orderID;
   },
   methods: {
     onImError(res) {
