@@ -270,7 +270,7 @@ const confirmUpload = async (filePath) => {
     }
     if (data.code !== 1) {
       uni.showToast({
-        title: data.msg || t("api-toast.server-error"),
+        title: "检测不到人脸，请更换图片",
         icon: "none",
       });
       return;
