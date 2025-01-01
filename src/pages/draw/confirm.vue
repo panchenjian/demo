@@ -268,13 +268,13 @@ const confirmUpload = async (filePath) => {
         toastMsg: t("api-toast.login-status-expired"),
       });
     }
-    // if (data.code !== 1) {
-    //   uni.showToast({
-    //     title: "检测不到人脸，请更换图片",
-    //     icon: "none",
-    //   });
-    //   return;
-    // }
+    if (data.code !== 1) {
+      uni.showToast({
+        title: data.msg || t("api-toast.server-error"),
+        icon: "none",
+      });
+      return;
+    }
     getAvatarList();
   } catch (err) {
     console.log(err);
