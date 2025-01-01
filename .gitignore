@@ -23,3 +23,7 @@ dist
 unpackage
 .hbuilderx
 .yarn
+
+# .env
+.env.development
+.env.production
