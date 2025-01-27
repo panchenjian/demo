@@ -14,7 +14,7 @@
         </view>
         <view class="info">
           <view class="pkg-info" v-if="userInfo?.balance_draw">
-            余额张数：
+            剩余张数：
             <text>{{ userInfo?.balance_draw || "" }}</text>
           </view>
         </view>
