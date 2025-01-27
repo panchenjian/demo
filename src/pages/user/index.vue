@@ -1,5 +1,7 @@
 <template>
   <view class="content">
+    <CardCodeInput ref="cardCodeInputPopupRef" />
+    <ShowQrCode ref="showQrCodePopupRef" />
     <view class="menu-area">
       <view class="user-info">
         <view class="nickname-wrap">
@@ -141,6 +143,8 @@ import { removeRecord, userRecords } from "../../api/faceSwap.js";
 import { defaultLoadingTitle } from "../../common/variable.js";
 import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
+import ShowQrCode from "../../components/ShowQrCode.vue";
+import CardCodeInput from "../../components/CardCodeInput.vue";
 
 const store = useStore();
 const { t } = useI18n();
@@ -159,6 +163,20 @@ const rightList = computed(() => {
 
 store.dispatch("fetchUserInfo");
 const userInfo = computed(() => store.state.userInfo);
+
+const cardCodeInputPopupRef = ref(null);
+const showQrCodePopupRef = ref(null);
+const onClickCardCode = () => {
+  cardCodeInputPopupRef.value.open();
+};
+const openQrPopup = () => {
+  showQrCodePopupRef.value.open();
+};
+const onRechargeBtnClick = () => {
+  uni.navigateTo({
+    url: "/pages/index/recharge",
+  });
+};
 
 const onRemoveRecord = (item) => {
   uni.showModal({

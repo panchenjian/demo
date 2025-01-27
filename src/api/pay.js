@@ -18,3 +18,11 @@ export function queryPayStatus(data) {
     data,
   });
 }
+
+export function useCardCode(data) {
+  return request({
+    url: "/api/pay/useCardCode",
+    method: "POST",
+    data,
+  });
+}
