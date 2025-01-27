@@ -33,7 +33,7 @@
     {
       "path": "pages/user/index",
       "style": {
-        "navigationBarTitleText": "我的影集"
+        "navigationBarTitleText": "个人中心"
       }
     },
     {

@@ -1,86 +1,135 @@
 <template>
   <view class="content">
-    <view
-      class="default-wrap"
-      v-if="isLoaded && (!orderList || orderList.length == 0)"
-    >
-      <image
-        class="default-img"
-        src="../../static/order-default-bg.png"
-      ></image>
-      <text>{{ t("user-index.default-label") }}</text>
-    </view>
-    <scroll-view
-      class="scrollView"
-      scroll-y="true"
-      enhanced="{{true}}"
-      show-scrollbar="{{false}}"
-      refresher-enabled="{true}"
-      :refresher-threshold="100"
-      :refresher-triggered="isRefresherTriggered"
-      @refresherrefresh="onRefresh"
-      @refresherrestore="onRestore"
-      @scrolltolower="loadMore"
-    >
-      <view class="list">
-        <view class="left-image-list-wrapper image-list-wrapper">
-          <view
-            class="image-wrapper"
-            v-for="(item, index) in leftList"
-            :key="item.id || index"
-            @tap="$debounceClick(goToDetail)(item)"
-            :animation="item.animationData"
-          >
-            <image
-              :src="item.result_image"
-              mode="widthFix"
-              class="result-image"
-              :lazy-load="true"
-            ></image>
-            <view class="result-desc">
-              <view class="result-date">{{
-                formatDate(item.create_time)
-              }}</view>
-              <image
-                src="/static/delete-avatar-icon.svg"
-                class="delete-icon"
-                @tap.stop="$debounceClick(onRemoveRecord)(item)"
-              />
-            </view>
-          </view>
+    <view class="menu-area">
+      <view class="user-info">
+        <view class="nickname-wrap">
+          <image
+            class="avatar-img"
+            src="/static/default-avatar-icon.png"
+            mode="aspectFill"
+          ></image>
+          <view class="nickname">{{ userInfo?.nickname || "请先登录" }}</view>
         </view>
-        <view class="image-list-wrapper">
-          <view
-            class="image-wrapper"
-            v-for="(item, index) in rightList"
-            :key="item.id || index"
-            @tap="$debounceClick(goToDetail)(item)"
-            :animation="item.animationData"
-          >
-            <image
-              :src="item.result_image"
-              mode="widthFix"
-              class="result-image"
-              :lazy-load="true"
-            ></image>
-            <view class="result-desc">
-              <view class="result-date">{{
-                formatDate(item.create_time)
-              }}</view>
-              <image
-                src="/static/delete-avatar-icon.svg"
-                class="delete-icon"
-                @tap.stop="$debounceClick(onRemoveRecord)(item)"
-              />
-            </view>
+        <view class="info">
+          <view class="pkg-info" v-if="userInfo?.balance_draw">
+            余额张数：
+            <text>{{ userInfo?.balance_draw || "" }}</text>
           </view>
         </view>
       </view>
-      <view v-if="isTotallyLoaded && orderList.length >= 8" class="listTips">{{
-        t("user-index.to-bottom-tip")
-      }}</view>
-    </scroll-view>
-    <customer-service-button />
+      <view class="menu-wrapper">
+        <button
+          type="plain"
+          class="menu-btn"
+          @tap="$debounceClick(openQrPopup)()"
+        >
+          {{ "限时福利" }}
+        </button>
+        <button
+          v-if="osName == 'android'"
+          type="plain"
+          class="menu-btn"
+          @tap="$debounceClick(onRechargeBtnClick)()"
+        >
+          充值兑换
+        </button>
+        <button
+          v-else
+          type="plain"
+          class="menu-btn"
+          @tap="$debounceClick(onClickCardCode)()"
+        >
+          兑换码
+        </button>
+        <button type="plain" class="menu-btn" open-type="contact">
+          {{ "在线客服" }}
+        </button>
+      </view>
+    </view>
+    <view class="order-area">
+      <view
+        class="default-wrap"
+        v-if="isLoaded && (!orderList || orderList.length == 0)"
+      >
+        <image
+          class="default-img"
+          src="../../static/order-default-bg.png"
+        ></image>
+        <text>{{ t("user-index.default-label") }}</text>
+      </view>
+      <scroll-view
+        class="scrollView"
+        scroll-y="true"
+        enhanced="{{true}}"
+        show-scrollbar="{{false}}"
+        refresher-enabled="{true}"
+        :refresher-threshold="100"
+        :refresher-triggered="isRefresherTriggered"
+        @refresherrefresh="onRefresh"
+        @refresherrestore="onRestore"
+        @scrolltolower="loadMore"
+      >
+        <view class="list">
+          <view class="left-image-list-wrapper image-list-wrapper">
+            <view
+              class="image-wrapper"
+              v-for="(item, index) in leftList"
+              :key="item.id || index"
+              @tap="$debounceClick(goToDetail)(item)"
+              :animation="item.animationData"
+            >
+              <image
+                :src="item.result_image"
+                mode="widthFix"
+                class="result-image"
+                :lazy-load="true"
+              ></image>
+              <view class="result-desc">
+                <view class="result-date">{{
+                  formatDate(item.create_time)
+                }}</view>
+                <image
+                  src="/static/delete-avatar-icon.svg"
+                  class="delete-icon"
+                  @tap.stop="$debounceClick(onRemoveRecord)(item)"
+                />
+              </view>
+            </view>
+          </view>
+          <view class="image-list-wrapper">
+            <view
+              class="image-wrapper"
+              v-for="(item, index) in rightList"
+              :key="item.id || index"
+              @tap="$debounceClick(goToDetail)(item)"
+              :animation="item.animationData"
+            >
+              <image
+                :src="item.result_image"
+                mode="widthFix"
+                class="result-image"
+                :lazy-load="true"
+              ></image>
+              <view class="result-desc">
+                <view class="result-date">{{
+                  formatDate(item.create_time)
+                }}</view>
+                <image
+                  src="/static/delete-avatar-icon.svg"
+                  class="delete-icon"
+                  @tap.stop="$debounceClick(onRemoveRecord)(item)"
+                />
+              </view>
+            </view>
+          </view>
+        </view>
+        <view
+          v-if="isTotallyLoaded && orderList.length >= 8"
+          class="listTips"
+          >{{ t("user-index.to-bottom-tip") }}</view
+        >
+      </scroll-view>
+    </view>
   </view>
 </template>
 
@@ -89,7 +138,6 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { removeRecord, userRecords } from "../../api/faceSwap.js";
-import CustomerServiceButton from "../../components/CustomerServiceButton.vue";
 import { defaultLoadingTitle } from "../../common/variable.js";
 import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
@@ -108,6 +156,9 @@ const rightList = computed(() => {
   if (!orderList.value) return [];
   return orderList.value.filter((_, index) => index % 2 !== 0);
 });
+
+store.dispatch("fetchUserInfo");
+const userInfo = computed(() => store.state.userInfo);
 
 const onRemoveRecord = (item) => {
   uni.showModal({
@@ -541,6 +592,127 @@ const goToDetail = (item) => {
         width: 324rpx;
         height: 206px;
       }
+    }
+  }
+}
+
+.menu-area {
+  background: linear-gradient(105.34deg, #c465ff 9.23%, #8247ff 105.76%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 8rpx 32rpx 16px 32rpx;
+
+  .left-wrapper {
+  }
+
+  .user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .nickname-wrap {
+      display: flex;
+      justify-content: left;
+      align-items: center;
+
+      .nickname {
+        color: #fff;
+        text-align: left;
+        font-family: PingFang SC;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 20px; /* 125% */
+        letter-spacing: -0.5px;
+        margin-left: 20rpx;
+      }
+    }
+
+    .avatar-img {
+      width: 88rpx;
+      height: 88rpx;
+      border-radius: 50%;
+      margin-right: 16rpx;
+    }
+
+    .info {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-direction: column;
+      padding-top: 2px;
+      gap: 6px;
+
+      .pkg-member-end-time {
+        color: rgba(255, 255, 255, 0.64);
+
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 16px; /* 133.333% */
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+
+        text {
+          color: #ff5a9f;
+          text-align: center;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 16px; /* 100% */
+          letter-spacing: -0.5px;
+        }
+      }
+
+      .pkg-info {
+        color: rgba(255, 255, 255, 0.64);
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 16px; /* 133.333% */
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: flex-start;
+      }
+    }
+  }
+
+  .menu-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30rpx;
+
+    .menu-btn {
+      margin: 0;
+      width: 208rpx;
+      height: 66rpx;
+      flex-shrink: 0;
+      border-radius: 16rpx;
+      background: $main-button-color;
+
+      color: #fff;
+      text-align: center;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 18px; /* 120% */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .menu-wrapper-double-btn {
+    justify-content: space-between;
+    .menu-btn {
+      width: 48%;
+      margin: 0;
     }
   }
 }
