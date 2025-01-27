@@ -175,7 +175,7 @@ const openQrPopup = () => {
 };
 const onRechargeBtnClick = () => {
   uni.navigateTo({
-    url: "/pages/index/recharge",
+    url: "/pages/recharge/index",
   });
 };
 

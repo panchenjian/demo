@@ -50,6 +50,12 @@
       }
     },
     {
+      "path": "pages/recharge/index",
+      "style": {
+        "navigationBarTitleText": "充值中心"
+      }
+    },
+    {
       "path": "pages/login/login",
       "style": {
         "navigationBarTitleText": "登录"
