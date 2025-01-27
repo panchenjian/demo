@@ -52,6 +52,7 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-3090820231124001",
     "@dcloudio/uni-mp-xhs": "3.0.0-3090820231124001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-3090820231124001",
+    "@dcloudio/uni-ui": "^1.5.7",
     "@tuniao/tn-icon": "^1.4.0",
     "install": "^0.13.0",
     "npm": "^9.8.1",
