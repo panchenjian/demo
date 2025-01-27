@@ -15,9 +15,17 @@ const i18nConfig = {
 
 const i18n = createI18n(i18nConfig);
 
+// 用户操作系统
+let userOpeationSystem = "";
+// 判断iOS系统
+export const isIOS = () => {
+  return userOpeationSystem == "ios";
+};
+
 export function createApp() {
   const res = uni.getSystemInfoSync() || {};
   const { osName } = res;
+  userOpeationSystem = osName;
   const app = createSSRApp(App);
   app.use(store);
   app.use(i18n);

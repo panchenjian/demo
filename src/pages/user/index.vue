@@ -28,7 +28,7 @@
           {{ "限时福利" }}
         </button>
         <button
-          v-if="osName == 'android'"
+          v-if="!isIOS()"
           type="plain"
           class="menu-btn"
           @tap="$debounceClick(onRechargeBtnClick)()"
@@ -145,6 +145,7 @@ import { AblumStore, AblumType } from "../../store/album";
 import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
 import ShowQrCode from "../../components/ShowQrCode.vue";
 import CardCodeInput from "../../components/CardCodeInput.vue";
+import { isIOS } from "../../main";
 
 const store = useStore();
 const { t } = useI18n();
