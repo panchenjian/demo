@@ -11,7 +11,3 @@ Uniapp
 Eslint 8.5
 
 Prettier 2.5
-
-## 部署运行 How to run
-
-[小程序运行教程](../doc/deploy-uniapp.md)
