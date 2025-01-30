@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { getGroupList } from "../api/swapTemplate";
 import { getUserInfo } from "../api/user";
+import { getAppConfig } from "../api";
 
 const state = {
   portrait: null,
@@ -15,6 +16,7 @@ const state = {
    */
   draft: {},
   userInfo: null,
+  appConfig: null,
 };
 const mutations = {
   // 不要直接调用这个方法，应该调用 DraftStore.setXXX 等方法。保证数据结构的一致性
@@ -44,6 +46,9 @@ const mutations = {
   },
   setUserInfo(state, data) {
     state.userInfo = data;
+  },
+  setAppConfig(state, data) {
+    state.appConfig = data;
   },
 };
 const createFetchAction = (commit, state, getter, fetchFunction) => {
@@ -97,6 +102,19 @@ const actions = {
         if (res.code === 1) {
           return {
             mutationName: "setUserInfo",
+            data: res.data,
+          };
+        }
+        return null;
+      })
+    );
+  },
+  fetchAppConfig({ commit }) {
+    return createFetchAction(commit, this.state, "appConfig", () =>
+      getAppConfig().then((res) => {
+        if (res.code === 1) {
+          return {
+            mutationName: "setAppConfig",
             data: res.data,
           };
         }

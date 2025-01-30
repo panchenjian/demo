@@ -5,8 +5,8 @@
       <view class="img-wrapper">
         <image
           class="img"
-          src="https://easypic-user-file.oss-cn-shenzhen.aliyuncs.com/uploads/draw/20240319/4073a1b779fb871b7d140896d8fb8f0c.png"
-          mode="aspectFill"
+          :src="appConfig?.mnp?.contact_qr_code"
+          mode="aspectFit"
           :show-menu-by-longpress="true"
         ></image>
         <p class="desc">长按识别二维码</p>
@@ -17,7 +17,11 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
+const appConfig = computed(() => store.state.appConfig || {});
 
 // 定义props
 const props = defineProps({

@@ -162,6 +162,8 @@ const rightList = computed(() => {
   return orderList.value.filter((_, index) => index % 2 !== 0);
 });
 
+store.dispatch("fetchAppConfig");
+
 store.dispatch("fetchUserInfo");
 const userInfo = computed(() => store.state.userInfo);
 
