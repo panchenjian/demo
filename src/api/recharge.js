@@ -2,7 +2,7 @@ import request from "../utils/request";
 
 export function getRechargePackage(data) {
   return request({
-    url: "/api/recharge/rechargePackage",
+    url: "/api/recharge/package",
     method: "GET",
     preventLoading: true,
     data,

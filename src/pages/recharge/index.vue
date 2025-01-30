@@ -9,7 +9,7 @@
       <view class="pkg-list">
         <view
           class="pkg-item"
-          v-for="(pkg, index) in subPlanList"
+          v-for="(pkg, index) in packageList"
           :key="index"
           :class="{ active: pkg.id == selectedItem?.id }"
           @tap="onSelectPricePlan(pkg)"
@@ -17,9 +17,6 @@
           <view class="top-wrapper">{{ pkg.name }}</view>
           <view class="bottom-wrapper">{{ pkg.describe }}</view>
           <view class="price-text">{{ "￥" + pkg.sell_price }}</view>
-          <view class="recommend-tag" v-if="pkg.is_recommend"
-            >67%用户的选择</view
-          >
         </view>
       </view>
     </view>
@@ -62,47 +59,16 @@ const store = useStore();
 // refs
 const cardCodeInputPopup = ref(null);
 
-// reactive state
-const pkgList = ref([]);
 const selectedItem = ref(null);
 const intervalId = ref(null);
 const pollingFinished = ref(false);
 
-// 套餐列表数据
-const subPlanList = ref([
-  {
-    name: "10张",
-    id: 1,
-    describe: "10张永久次数",
-    sell_price: 0.01,
-    is_recommend: false,
-    draw_number: 10,
-  },
-  {
-    name: "50张",
-    id: 4,
-    describe: "50张永久次数",
-    sell_price: 48.0,
-    is_recommend: false,
-    draw_number: 50,
-  },
-  {
-    name: "100张",
-    id: 7,
-    describe: "100张永久次数",
-    sell_price: 95.0,
-    is_recommend: true,
-    draw_number: 100,
-  },
-  {
-    name: "500张",
-    id: 8,
-    describe: "500张永久次数",
-    sell_price: 450.0,
-    is_recommend: false,
-    draw_number: 500,
-  },
-]);
+// 充值套餐列表
+const packageList = ref([]);
+getRechargePackage().then((res) => {
+  packageList.value = res.data;
+  selectedItem.value = packageList.value[0];
+});
 
 store.dispatch("fetchUserInfo");
 const userInfo = computed(() => store.state.userInfo || {});
@@ -110,10 +76,6 @@ const userInfo = computed(() => store.state.userInfo || {});
 // methods
 const onClickCardCode = () => {
   cardCodeInputPopup.value?.open();
-};
-
-const onCloseCardCode = () => {
-  cardCodeInputPopup.value?.close();
 };
 
 const onSelectPricePlan = (item) => {
@@ -169,14 +131,9 @@ const onPaySuccess = async () => {
 
 const submitOrder = async () => {
   try {
-    const selectedPlanID = selectedItem.value.id;
-
-    const orderDrawNumber = subPlanList.value.find(
-      (item) => item.id === selectedPlanID
-    )?.draw_number;
-
     const orderRes = await submitRechargeOrder({
-      recharge_package_id: selectedPlanID,
+      package_id: selectedItem.value.id,
+      money: selectedItem.value.sell_price,
     });
     if (orderRes.code !== 1) {
       throw new Error(orderRes.msg || "服务器开小差了");
@@ -199,7 +156,6 @@ const submitOrder = async () => {
       provider: "wxpay",
       ...payRes.data.config,
       success: () => {
-        orderDrawNumber.value = orderDrawNumber;
         showLoadingOverlay(orderID);
       },
       fail: (err) => {
@@ -221,9 +177,6 @@ const submitOrder = async () => {
 
 onMounted(() => {
   setTopNavBar2DarkTheme("#3f2d64");
-  if (!selectedItem.value && subPlanList.value.length > 0) {
-    selectedItem.value = { ...subPlanList.value[0] };
-  }
 });
 
 onUnmounted(() => {
