@@ -4,9 +4,20 @@ export const miniProgramAppID = uni.getAccountInfoSync
   : "";
 
 export function getUserInfo(loginParam) {
+	const token = uni.getStorageSync("token");
+	// 如果存在 token，则将其添加到请求头中
+	let header;
+	if (token) {
+	  header = { Authorization:token };
+	} else {
+	  requireLogin();
+	  return Promise.reject(new Error("No token found"));
+	}
+	
   return request({
-    url: "/api/user/info",
-    method: "GET",
+    url: "/user/info",
+    method: "POST",
+	header:header,
     preventLoading: true,
     loginParam,
   });
@@ -16,7 +27,7 @@ export function getUserInfo(loginParam) {
 export function mnpLogin(data) {
   data.appid = miniProgramAppID;
   return request({
-    url: "/api/login/mnpLogin",
+    url: "/user/wx/token",//api/login/mnpLogin",
     method: "POST",
     data,
     loginRequired: false,

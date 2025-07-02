@@ -107,7 +107,7 @@ export default {
     },
     onLoginSuccess(loginRes) {
       console.log(loginRes, "login res");
-      if (loginRes.code !== 1) {
+      if (loginRes.code !== 20000) {
         uni.showToast({
           title: loginRes.msg,
         });

@@ -4,7 +4,11 @@ import { getUserInfo } from "../api/user";
 import { getAppConfig } from "../api";
 
 const state = {
-  portrait: null,
+  portrait: [
+						  // {"id":1,"name":"全部",templates:[{target_image:'',name:'萌小人'},{target_image:'',name:'axx'},{target_image:'',name:'axx'},{target_image:'',name:'axx'},{target_image:'',name:'axx'},{target_image:'',name:'a'}]},
+						  // {"id":2,"name":"人物"},
+						  // {"id":3,"name":"萌宠"}
+				],
   swap: null,
   browseringGroupDetail: null,
   /**
@@ -78,7 +82,12 @@ const actions = {
             mutationName: "setPortrait",
             data: res.data?.groupList,
           };
-        }
+        }else{
+			return {
+				mutationName: "setPortrait",
+				data: [],
+			}
+		}
       })
     );
   },

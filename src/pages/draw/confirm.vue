@@ -51,7 +51,7 @@
       </view>
     </view>
     <view class="create-avatar-tips" v-if="!digitalAvatarList.length">
-      请先创建一个数字分身
+      请先上传一个照片
     </view>
     <view class="add-file" v-if="!digitalAvatarList.length">
       <view class="add-file-btn-list" v-if="!userFilePath">
@@ -328,7 +328,7 @@ const getUserBalance = () => {
 };
 
 onLoad(() => {
-  getUserBalance();
+  // getUserBalance();
   getAvatarList();
 });
 

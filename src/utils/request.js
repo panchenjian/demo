@@ -100,6 +100,7 @@ export function requireLogin(
     redirectTab: "",
   }
 ) {
+	//return;//暂时不跳转登录页
   const routerFN = redirect || delta ? uni.navigateTo : uni.reLaunch;
   if (disabledToast) {
     routerFN({

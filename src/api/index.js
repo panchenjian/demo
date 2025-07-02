@@ -7,3 +7,11 @@ export function getAppConfig() {
     preventLoading: true,
   });
 }
+
+export function getBannerList() {
+	return request({
+	  url: "/system/banner",
+	  method: "GET",
+	  preventLoading: true,
+	});
+}
