@@ -74,6 +74,11 @@
           </div>
         </view>
       </view>
+	  <view>
+	    余额剩余
+	    <span class="num-span">{{ balanceDraw }}</span>
+	    张
+	  </view>
     </view>
     <view class="user-input-form" v-else>
       <view class="avatar-selector form-item">
@@ -195,6 +200,7 @@
 import { ref, computed } from "vue";
 import { checkLogin } from "../../utils/common";
 import { createSwap, createAvatar } from "../../api/faceSwap";
+import {getTmpDetail} from "../../api/swapTemplate.js";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { closeIcon } from "../../common/svgBase64";
@@ -208,7 +214,7 @@ import {
   getDigitalAvatarList,
   removeDigitalAvatar,
 } from "../../api/digitalAvatar";
-import { getUserInfo } from "../../api/user";
+import { getUserInfo,getVipCount } from "../../api/user";
 import { AblumStore, AblumType } from "../../store/album";
 const store = useStore();
 const { t } = useI18n();
@@ -320,16 +326,23 @@ const getAvatarList = async () => {
     selectedAvatar.value = digitalAvatarList.value[0];
   }
 };
+const getTemplateDetail= async ()=>{
+	const res = await getTmpDetail(userDraft.value.template.id);
+	if(res.code === 20000) {
+    debugger;
+  }
+}
 
 const getUserBalance = () => {
-  getUserInfo().then((res) => {
-    balanceDraw.value = res.data?.balance_draw || 0;
+  getVipCount().then((res) => {
+    balanceDraw.value = res.Data?.number || 0;
   });
 };
 
 onLoad(() => {
-  // getUserBalance();
-  getAvatarList();
+  getUserBalance();
+  // getAvatarList();
+  getTemplateDetail();
 });
 
 onShow(() => {

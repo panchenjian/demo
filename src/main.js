@@ -6,6 +6,10 @@ import App from "./App.vue";
 import store from "./store/index.js";
 
 import messages from "./locale/index";
+// import Vue from "vue";
+// import uvUI from '@/uni_modules/uv-ui-tools'
+// Vue.use(uvUI)
+// 如此配置即可
 
 const i18nConfig = {
   locale: "zh-Hans",
@@ -28,6 +32,7 @@ export function createApp() {
   userOpeationSystem = osName;
   const app = createSSRApp(App);
   app.use(store);
+  // app.use(uvUI);
   app.use(i18n);
   app.config.globalProperties.$debounceClick = debounceClick;
   app.config.globalProperties.$getMediumFontWeight = getMediumFontWeight.bind(

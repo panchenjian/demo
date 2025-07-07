@@ -19,7 +19,7 @@
 					<view v-for="(group, index) in tempTitle" :key="group.uuid" :style="$getMediumFontWeight()"
 						:id="'i' + group.uuid" :class="
               'tag-item ' +
-              (group.id == selectedGroup?.uuid ? 'tag-selected' : '')
+              (group.uuid == selectedGroup?.uuid ? 'tag-selected' : '')
             " @tap="onSelectGroup(group)">
 						{{ index == 0 ? `🔥 ` : "" }}{{ group.title }}
 					</view>
@@ -28,18 +28,18 @@
 		</view>
 		<swiper class="swiperWrap" :current="curPage" height="100%" :autoplay="false" next-margin="0"
 			@change="handleSwiperChange">
-			<swiper-item v-for="(group, index) in groupList" :key="index">
+			<swiper-item v-for="(group, index) in tempTitle" :key="index">
 				<scroll-view class="scroll-view_Y" scroll-y="true" scroll-with-animation="false" :enhanced="true"
-					:show-scrollbar="false">
+					:show-scrollbar="false" @scrolltolower="lower(group)">
 					<view class="template-wrap" :class="{ 'template-wrap-padding': actionBarVisible }">
-						<view v-for="(template, index) in group.templates" :key="index" class="template-item"
+						<view v-for="(template, index) in groupList" :key="index" class="template-item"
 							@tap="$debounceClick(onSelectTemplate)(template)">
 							<view style="display: flex; flex-direction: column">
-								<image :src="template.target_image" mode="aspectFill" :lazy-load="true"
+								<image :src="template.cover" mode="aspectFill" :lazy-load="true"
 									class="template-item-img"></image>
 								<view class="template-desc">
 									<view class="name">
-										<text>{{ template.name }}</text>
+										<text>{{ template.title }}</text>
 										<text class="name-btn">去定制</text>
 									</view>
 								</view>
@@ -75,7 +75,7 @@
 	} from "vue-i18n";
 
 	const selectedTemplate = ref(null);
-	const selectedGroup = ref();
+	const selectedGroup = ref({uuid:''});
 	const store = useStore();
 	const {
 		t
@@ -85,12 +85,12 @@
 	const actionBarVisible = ref(true);
 	const curPage = ref(0);
 	const curTagScrollView = ref("");
-
-	const groupList = computed(() => store.state.portrait);
-
+	
+	const tempTitle = computed(() =>store.state.tempTitleList);//ref([])
+	const groupList = computed(() => store.state.tempTitleList[curPage.value]?.list||[]);//store.state.portrait);
 
 	const bannerList = ref([])
-	const tempTitle = ref([])
+	
 	const indicatorDots = ref(true)
 	const autoplay = ref(true)
 	const interval = ref(2000)
@@ -101,14 +101,23 @@
 		getBannerList().then(res=>{
 			bannerList.value=res.data.items
 		})
-		getTmpList().then(res=>
-			tempTitle.value=res.data.items
-		)
+		getTmpList().then(res=>{
+			let _tempTitle=[{title:'全部',uuid:''}].concat(res.data.items)
+			store.commit('setTempTitleList',_tempTitle);
+		})
+	}
+	const getListByUuid=async (category_uuid='',page=1)=>{
+		await store.dispatch("fetchPortrait",{category_uuid,page});
+	}
+	const lower=(group)=>{
+		getListByUuid(group.uuid,group.curPage+1)
 	}
 
 	onLoad(async () => {
 		getBanner();
-		await store.dispatch("fetchPortrait");
+		await store.dispatch("fetchPortrait",{category_uuid:''});
+		// tempTitle[0].list=store.state.portrait;
+		// store.commit('setTempTitleList',tempTitle)
 		const defaultSelected = groupList.value?.[0];
 		selectedGroup.value = defaultSelected || [];
 	});
@@ -117,12 +126,11 @@
 		DraftStore.setTemplate(
 			store,
 			new DraftType.Template({
-				id: selectedTemplate.value.id,
-				name: selectedTemplate.value.name,
-				target_image: selectedTemplate.value.target_image,
+				id: selectedTemplate.value.uuid,
+				name: selectedTemplate.value.title,
+				target_image: selectedTemplate.value.cover,
 			})
 		);
-
 		uni.navigateTo({
 			url: "/pages/draw/confirm",
 		});
@@ -130,10 +138,13 @@
 
 	const onSelectGroup = (group) => {
 		selectedGroup.value = group;
-		const nextPage = groupList.value.findIndex(
-			(item) => item.id == selectedGroup.value?.id
-		);
-		curPage.value = nextPage;
+		// const nextPage = groupList.value.findIndex(
+		// 	(item) => item.id == selectedGroup.value?.id
+		// );
+		// curPage.value = nextPage;
+		console.log('点击',group);
+		store.commit('setTempUuid',group.uuid)
+		store.dispatch("fetchPortrait",{category_uuid:group.uuid});
 	};
 
 	const onSelectTemplate = (template) => {
@@ -143,9 +154,11 @@
 
 	const handleSwiperChange = (current) => {
 		const nextPage = current.detail.current;
-		const groupId = groupList.value[nextPage].id;
-		selectedGroup.value = groupList.value[nextPage];
+		debugger;
+		const groupId = tempTitle.value[nextPage].uuid;
+		selectedGroup.value = tempTitle.value[nextPage];
 		curPage.value = nextPage;
+		getListByUuid(groupId);
 		if (current.detail.source == "touch") {
 			curTagScrollView.value = groupId;
 		}

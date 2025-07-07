@@ -7,7 +7,7 @@
         <view class="nickname-wrap">
           <image
             class="avatar-img"
-            src="/static/default-avatar-icon.png"
+            :src='userInfo?.avatar||"/static/default-avatar-icon.png"'
             mode="aspectFill"
           ></image>
           <view class="nickname">{{ userInfo?.nickname || "请先登录" }}</view>
@@ -20,7 +20,19 @@
         </view>
       </view>
       <view class="menu-wrapper">
-        <button
+		  <view class="menu-btn">
+		  	<view><uni-icons type="home"></uni-icons>会员</view>
+			<view class="menu-des">
+				当前尚未开通会员
+			</view>
+		  </view>
+		  <view class="menu-btn">
+		  	<view><uni-icons type="home"></uni-icons>订单</view>
+		  			<view class="menu-des">
+		  				点击查看我的订单
+		  			</view>
+		  </view>
+        <!-- <button
           type="plain"
           class="menu-btn"
           @tap="$debounceClick(openQrPopup)()"
@@ -42,12 +54,11 @@
           @tap="$debounceClick(onClickCardCode)()"
         >
           兑换码
-        </button>
-        <button type="plain" class="menu-btn" open-type="contact">
-          {{ "在线客服" }}
-        </button>
+        </button> -->
+        
       </view>
     </view>
+	
     <view class="order-area">
       <view
         class="default-wrap"
@@ -708,25 +719,30 @@ const goToDetail = (item) => {
     justify-content: space-between;
     width: 100%;
     margin-top: 30rpx;
+	gap:16rpx;
 
     .menu-btn {
       margin: 0;
-      width: 208rpx;
+      min-width: 208rpx;
       height: 66rpx;
       flex-shrink: 0;
+	  flex-grow: 1;
       border-radius: 16rpx;
-      background: $main-button-color;
+      background-color: rgba(221,211,252,0.91);
 
-      color: #fff;
+      color: #7C43CC;
       text-align: center;
-      font-size: 16px;
+      font-size: 14rpx;
       font-style: normal;
       font-weight: 600;
       line-height: 18px; /* 120% */
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      // display: flex;
+      // justify-content: center;
+      // align-items: center;
     }
+	.menu-des{
+		font-size: 12rpx;
+	}
   }
 
   .menu-wrapper-double-btn {

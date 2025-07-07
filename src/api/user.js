@@ -61,3 +61,22 @@ export function uploadCommonImage(filePath) {
     header: header,
   });
 }
+export function getVipCount(filePath) {
+  const token = uni.getStorageSync("token");
+
+  // 如果存在 token，则将其添加到请求头中
+  let header;
+  if (token) {
+    header = { Authorization:token };
+  } else {
+    requireLogin();
+    return Promise.reject(new Error("No token found"));
+  }
+
+  return request({
+    url: "/user/generate/number",
+    method: "GET",
+    
+    header: header,
+  });
+}

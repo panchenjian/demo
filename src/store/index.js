@@ -9,6 +9,8 @@ const state = {
 						  // {"id":2,"name":"人物"},
 						  // {"id":3,"name":"萌宠"}
 				],
+  tempUuid:'',//当前选择的模板uuid
+  tempTitleList:[],//标题分类
   swap: null,
   browseringGroupDetail: null,
   /**
@@ -45,6 +47,29 @@ const mutations = {
   setPortrait(state, data) {
     state.portrait = data;
   },
+  setTempUuid(state, data) {
+    state.tempUuid = data;
+  },
+  setTempTitleList(state, data) {
+    state.tempTitleList = data;
+  },
+  setTempTitleListByUuid(state, data) {
+    state.tempTitleList.forEach(x=>{
+		if(x.uuid===data.uuid){
+			if(!x.list){
+				x.list=[];
+			}
+			x.list=x.list.concat(data.data);
+			if(!x.curPage){
+				x.curPage=1;
+			}else{
+				x.curPage++;
+			}
+		}
+		return x;
+	});
+	console.log(state.tempTitleList)
+  },
   setSwap(state, data) {
     state.swap = data;
   },
@@ -56,31 +81,47 @@ const mutations = {
   },
 };
 const createFetchAction = (commit, state, getter, fetchFunction) => {
-  const fetchPromise =
-    getter && state[getter] && state[getter].length > 0
-      ? Promise.resolve(state[getter])
-      : null;
+  let fetchPromise;
+  if("portrait"===getter){
+	  // fetchPromise =
+	  //   getter && state['tempTitleList'] && state['tempTitleList'].length > 0
+	  //     ? Promise.resolve(state['tempTitleList'])
+	  //     : null;
+  }else{
+	  fetchPromise =
+	    getter && state[getter] && state[getter].length > 0
+	      ? Promise.resolve(state[getter])
+	      : null;
+  }
+  
 
   if (fetchPromise) {
     return fetchPromise;
   }
 
-  return fetchFunction().then(({ mutationName, data }) => {
+  return fetchFunction().then(({ mutationName, data,uuid }) => {
     commit(mutationName, data);
+	// if(uuid){
+		commit('setTempTitleListByUuid',{uuid,data:data})
+	// }
     return data;
   });
 };
 
 const actions = {
-  fetchPortrait({ commit }) {
+  fetchPortrait({ commit },{category_uuid,page}) {
+	  console.log('点击uuid',category_uuid);
     return createFetchAction(commit, this.state, "portrait", () =>
       getGroupList({
-        page_id: 1,
+        page: page||1,
+		size:20,
+		category_uuid:category_uuid||this.state.tempUuid
       }).then((res) => {
-        if (res.code === 1) {
+        if (res.code === 20000) {
           return {
             mutationName: "setPortrait",
-            data: res.data?.groupList,
+            data: res.data?.items,
+			uuid:category_uuid,
           };
         }else{
 			return {
@@ -108,7 +149,7 @@ const actions = {
   fetchUserInfo({ commit }) {
     return createFetchAction(commit, this.state, "userInfo", () =>
       getUserInfo().then((res) => {
-        if (res.code === 1) {
+        if (res.code === 20000) {
           return {
             mutationName: "setUserInfo",
             data: res.data,
