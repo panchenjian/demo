@@ -6,9 +6,11 @@ import App from "./App.vue";
 import store from "./store/index.js";
 
 import messages from "./locale/index";
-// import Vue from "vue";
+import Vue from "vue";
 // import uvUI from '@/uni_modules/uv-ui-tools'
 // Vue.use(uvUI)
+// import vTabs from '@/uni_modules/v-tabs/components/v-tabs/v-tabs';
+// Vue.use(vTabs);
 // 如此配置即可
 
 const i18nConfig = {

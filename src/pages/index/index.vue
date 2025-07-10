@@ -107,6 +107,7 @@
 		})
 	}
 	const getListByUuid=async (category_uuid='',page=1)=>{
+		debugger;
 		await store.dispatch("fetchPortrait",{category_uuid,page});
 	}
 	const lower=(group)=>{
@@ -154,9 +155,10 @@
 
 	const handleSwiperChange = (current) => {
 		const nextPage = current.detail.current;
-		debugger;
+		
 		const groupId = tempTitle.value[nextPage].uuid;
 		selectedGroup.value = tempTitle.value[nextPage];
+		store.commit('setTempUuid',groupId);
 		curPage.value = nextPage;
 		getListByUuid(groupId);
 		if (current.detail.source == "touch") {
@@ -343,6 +345,7 @@
 			font-weight: 580;
 			display: flex;
 			justify-content: space-between;
+			align-items: center;
 			width: 100%;
 		}
 	}
@@ -462,10 +465,10 @@
 		background-color: red;
 	}
 	.name-btn{
-		background-color: skyblue;
+		background-color: $mian-button-bg;
 		color:white;
 		border-radius: 16rpx;
 		font-size: 12px;
-		padding:4rpx 8rpx;
+		padding:10rpx 18rpx;
 	}
 </style>

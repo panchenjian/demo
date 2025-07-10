@@ -9,6 +9,7 @@ const state = {
 						  // {"id":2,"name":"人物"},
 						  // {"id":3,"name":"萌宠"}
 				],
+	addPortrait:[],
   tempUuid:'',//当前选择的模板uuid
   tempTitleList:[],//标题分类
   swap: null,
@@ -83,10 +84,12 @@ const mutations = {
 const createFetchAction = (commit, state, getter, fetchFunction) => {
   let fetchPromise;
   if("portrait"===getter){
-	  // fetchPromise =
-	  //   getter && state['tempTitleList'] && state['tempTitleList'].length > 0
-	  //     ? Promise.resolve(state['tempTitleList'])
-	  //     : null;
+		let t=getter && state['tempTitleList'];
+		let one=t.find(x=>x.uuid===state.tempUuid);
+		debugger;
+	  fetchPromise =one?.curPage
+	      ? Promise.resolve(state['tempTitleList'])
+	      : null;
   }else{
 	  fetchPromise =
 	    getter && state[getter] && state[getter].length > 0
@@ -111,7 +114,7 @@ const createFetchAction = (commit, state, getter, fetchFunction) => {
 const actions = {
   fetchPortrait({ commit },{category_uuid,page}) {
 	  console.log('点击uuid',category_uuid);
-    return createFetchAction(commit, this.state, "portrait", () =>
+    return createFetchAction(commit, this.state, page&&page>1?"addPortrait":"portrait", () =>
       getGroupList({
         page: page||1,
 		size:20,
@@ -122,6 +125,7 @@ const actions = {
             mutationName: "setPortrait",
             data: res.data?.items,
 			uuid:category_uuid,
+			page:page
           };
         }else{
 			return {

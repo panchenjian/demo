@@ -7,27 +7,27 @@
         <view class="nickname-wrap">
           <image
             class="avatar-img"
-            :src='userInfo?.avatar||"/static/default-avatar-icon.png"'
+            :src='userInfo?.avatar||"/static/user.png"'
             mode="aspectFill"
           ></image>
           <view class="nickname">{{ userInfo?.nickname || "请先登录" }}</view>
         </view>
         <view class="info">
           <view class="pkg-info" v-if="userInfo?.balance_draw">
-            剩余张数：
-            <text>{{ userInfo?.balance_draw || "" }}</text>
+            剩余可用次数：
+            <text class="pkg-cnt">{{ userInfo?.balance_draw || "" }}次</text>
           </view>
         </view>
       </view>
       <view class="menu-wrapper">
 		  <view class="menu-btn">
-		  	<view><uni-icons type="home"></uni-icons>会员</view>
+		  	<view class="center-flex"><image src="/static/vip.png" class="btn-icon"></image>会员</view>
 			<view class="menu-des">
 				当前尚未开通会员
 			</view>
 		  </view>
 		  <view class="menu-btn">
-		  	<view><uni-icons type="home"></uni-icons>订单</view>
+		  	<view class="center-flex"><image src="/static/list.png" class="btn-icon"></image>订单</view>
 		  			<view class="menu-des">
 		  				点击查看我的订单
 		  			</view>
@@ -58,17 +58,33 @@
         
       </view>
     </view>
+	<view class="group-list">
+		<v-tabs v-model="current" :tabs="tabs" @change="changeTab" activeColor="#DDD3FC"></v-tabs>
+	</view>
 	
     <view class="order-area">
       <view
         class="default-wrap"
         v-if="isLoaded && (!orderList || orderList.length == 0)"
       >
-        <image
-          class="default-img"
-          src="../../static/order-default-bg.png"
-        ></image>
-        <text>{{ t("user-index.default-label") }}</text>
+		<view v-if="userInfo?.nickname">
+			<image
+			  class="default-img"
+			  src="../../static/order-default-bg.png"
+			></image>
+			<text class="text-tip-center">{{ t("user-index.default-label") }}</text>
+		</view>
+		<view class="text-tip-center" v-else>
+			<image
+			  class="default-img2"
+			  src="../../static/user.png"
+			></image>
+			<text class="text-tip-center">账号未登录</text>
+			<text class="text-tip-center">
+			登录开始专属手办定制！
+			</text>
+			<text class="name-btn-mid" @click="goToLogin">立即登录</text>
+		</view>
       </view>
       <scroll-view
         class="scrollView"
@@ -160,6 +176,10 @@ import { isIOS } from "../../main";
 
 const store = useStore();
 const { t } = useI18n();
+
+const current = ref(0);
+const tabs = ref(["待定制","已定制"]);
+const changeTab=(index)=>{}
 
 const orderList = ref([]);
 
@@ -345,10 +365,16 @@ const goToDetail = (item) => {
     url: "/pages/draw/result",
   });
 };
+const goToLogin =()=>{
+	uni.navigateTo({
+		url: "/pages/login/login",
+	});
+}
 </script>
 
 <style lang="scss" scoped>
 @import "@/common/variable.scss";
+@import "@/common/main.scss";
 
 .content {
   height: 100%;
@@ -366,11 +392,15 @@ const goToDetail = (item) => {
     width: 392rpx;
     height: 336rpx;
   }
+  .default-img2{
+	  width: 164rpx;
+	  height: 164rpx;
+  }
 
-  text {
-    font-size: 14px;
-    color: #d1d1d1;
-    line-height: 36rpx;
+  
+  .text-tip-center{
+	  color:#BAAAF5;display:block;
+	  text-align: center;line-height: 36px;
   }
 }
 
@@ -629,14 +659,21 @@ const goToDetail = (item) => {
 }
 
 .menu-area {
-  background: linear-gradient(105.34deg, #c465ff 9.23%, #8247ff 105.76%);
+  background: url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20version%3D%221.1%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%221%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%220%22%20gradientTransform%3D%22matrix(6.123233995736766e-17%2C%201%2C%20-0.3508284023668639%2C%206.123233995736766e-17%2C%200.5%2C%200)%22%3E%3Cstop%20stop-color%3D%22%23d5c9fb%22%20stop-opacity%3D%221%22%20offset%3D%220%22%3E%3C%2Fstop%3E%3Cstop%20stop-color%3D%22%23ddd3fc%22%20stop-opacity%3D%220.91%22%20offset%3D%220.181%22%3E%3C%2Fstop%3E%3Cstop%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%220.77%22%20offset%3D%221%22%3E%3C%2Fstop%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url(%231)%22%3E%3C%2Frect%3E%3C%2Fsvg%3E");
 
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 8rpx 32rpx 16px 32rpx;
-
+  padding: 103px 32rpx 16px 32rpx;
+  position: relative;
+&:after{
+	content:'MYDollDoll';
+	    color: rgba(186, 170, 245, 0.19);
+	    font-size: 74px;
+	    font-weight: 700;
+	    line-height: 104px;position: absolute;top:10px;
+}
   .left-wrapper {
   }
 
@@ -652,7 +689,7 @@ const goToDetail = (item) => {
       align-items: center;
 
       .nickname {
-        color: #fff;
+        color: #000;
         text-align: left;
         font-family: PingFang SC;
         font-size: 17px;
@@ -665,8 +702,8 @@ const goToDetail = (item) => {
     }
 
     .avatar-img {
-      width: 88rpx;
-      height: 88rpx;
+      width: 164rpx;
+      height: 164rpx;
       border-radius: 50%;
       margin-right: 16rpx;
     }
@@ -709,6 +746,8 @@ const goToDetail = (item) => {
         letter-spacing: -0.5px;
         display: flex;
         align-items: flex-start;
+		.pkg-cnt{
+		color:#EE00F3}
       }
     }
   }
@@ -720,19 +759,19 @@ const goToDetail = (item) => {
     width: 100%;
     margin-top: 30rpx;
 	gap:16rpx;
-
+	line-height: 23px;
+	.btn-icon{width:38rpx;height:38rpx;margin-right:8px;}
     .menu-btn {
-      margin: 0;
+      margin: 0;padding:8px;
       min-width: 208rpx;
-      height: 66rpx;
+      
       flex-shrink: 0;
 	  flex-grow: 1;
       border-radius: 16rpx;
       background-color: rgba(221,211,252,0.91);
 
       color: #7C43CC;
-      text-align: center;
-      font-size: 14rpx;
+      font-size: 14px;
       font-style: normal;
       font-weight: 600;
       line-height: 18px; /* 120% */
@@ -741,7 +780,7 @@ const goToDetail = (item) => {
       // align-items: center;
     }
 	.menu-des{
-		font-size: 12rpx;
+		font-size: 12px;margin-top: 4px;
 	}
   }
 
@@ -752,5 +791,6 @@ const goToDetail = (item) => {
       margin: 0;
     }
   }
+  .group-list{border-radius: 36rpx;background-color: white;border:1px solid rgba(221,211,252,0.91)}
 }
 </style>

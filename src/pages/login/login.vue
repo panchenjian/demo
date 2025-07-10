@@ -2,9 +2,8 @@
   <view class="content">
     <view class="main">
       <image
-        :src="logoIcon"
-        mode="aspectFit"
-        style="width: 228rpx; height: 59rpx"
+        src="/static/logo.png"
+        style="width: 211rpx; height: 211rpx"
       ></image>
       <view class="title">{{ $t("draw-bootstrap.title") }}</view>
     </view>
@@ -15,6 +14,9 @@
     >
       微信授权登录
     </button>
+	<view class="text-button-link" @tap="onGoToIndex">
+		暂不登录
+	</view>
     <view class="user-privacy-wrap">
       <checkbox-group @change="handleCheckboxChange">
         <checkbox
@@ -164,6 +166,11 @@ export default {
         complete: () => {},
       });
     },
+	onGoToIndex(){
+		uni.switchTab({
+		  url: "/pages/index/index",
+		});
+	}
   },
 };
 </script>
@@ -209,7 +216,7 @@ export default {
 
 .user-privacy-wrap {
   position: absolute;
-  bottom: 200rpx;
+  bottom: 174rpx;
   display: flex;
   justify-content: center;
   align-items: center;

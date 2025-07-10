@@ -42,7 +42,8 @@
     {
       "path": "pages/user/index",
       "style": {
-        "navigationBarTitleText": "个人中心"
+        // "navigationBarTitleText": "个人中心"
+		"navigationStyle":"custom"
       }
     },
     {
@@ -73,26 +74,26 @@
   },
   "tabBar": {
     "color": "#8C8C8C",
-    "selectedColor": "#D16FFF",
+    "selectedColor": "#B37DF5%",
     "borderStyle": "white",
     "backgroundColor": "#F5F6F7",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "iconPath": "static/tabbar-icon-portrait.png",
-        "selectedIconPath": "static/tabbar-icon-portrait-hl.png",
+        "iconPath": "static/home.png",
+        "selectedIconPath": "static/home.png",
         "text": "首页"
       },
       {
         "pagePath": "pages/swap/index",
-        "iconPath": "static/tabbar-icon-swap.png",
-        "selectedIconPath": "static/tabbar-icon-swap-hl.png",
-        "text": "玩法"
+        "iconPath": "static/fast.png",
+        "selectedIconPath": "static/fast.png",
+        "text": "快速定制"
       },
       {
         "pagePath": "pages/user/index",
-        "iconPath": "static/tabbar-icon-user-new.png",
-        "selectedIconPath": "static/tabbar-icon-user-new-hl.png",
+        "iconPath": "static/my.png",
+        "selectedIconPath": "static/my.png",
         "text": "我的"
       }
     ]
