@@ -74,7 +74,7 @@ export default function request(options) {
           ? defaultLoadingTitle
           : options.loadingToastTips,
       success: (res) => {
-        if (res.data.code === -1) {
+        if (res.data.code === 40001) {
           // 如果返回状态码为 -1，则提示用户重新登录
           requireLogin({
             ...options.loginParam,

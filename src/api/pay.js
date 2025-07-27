@@ -9,13 +9,14 @@ export function requestPrepay(data) {
     data,
   });
 }
-
-export function queryPayStatus(data) {
+//获取支付结果
+export function queryPayStatus(order_no) {
+  const token = uni.getStorageSync("token");
   return request({
-    url: "/api/pay/payStatus",
+    url: `/pay/result/${order_no}`,
     method: "GET",
     preventLoading: true,
-    data,
+    header: { Authorization: token },
   });
 }
 

@@ -5,6 +5,7 @@ import { getMediumFontWeight } from "./utils/common.js";
 import App from "./App.vue";
 import store from "./store/index.js";
 
+//import wuUI from "@/uni_modules/wu-ui-tools";
 import messages from "./locale/index";
 import Vue from "vue";
 // import uvUI from '@/uni_modules/uv-ui-tools'
@@ -35,6 +36,7 @@ export function createApp() {
   const app = createSSRApp(App);
   app.use(store);
   // app.use(uvUI);
+  //app.use(wuUI);
   app.use(i18n);
   app.config.globalProperties.$debounceClick = debounceClick;
   app.config.globalProperties.$getMediumFontWeight = getMediumFontWeight.bind(

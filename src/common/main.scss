@@ -23,21 +23,303 @@
   color: #b8b8b8;
   box-shadow: none;
 }
-.center-flex{
-	display: flex;
-	align-items: center;
+.center-flex {
+  display: flex;
+  align-items: center;
 }
-.name-btn-mid{
-	background-color: #B276FF;
-	color:white;
-	border-radius: 16px;
-	font-size: 14px;
-	padding:10px 18px;
+.column-flex {
+  display: flex;
+  flex-direction: column;
 }
-.text-button-link{
-	position: absolute;
-	bottom: 251rpx;
-	left: 50%;
-	transform: translate(-50%, 0);
-	font-size: 14px;
+.row-flex {
+  display: flex;
+  flex-direction: row;
+}
+.space-b-flex {
+  display: flex;
+  justify-content: space-between;
+}
+.name-btn-mid {
+  background-color: #b276ff !important;
+  color: white;
+  border-radius: 20pt;
+  font-size: 14px;
+  padding: 10px 18px;
+}
+.name-btn-big {
+  width: 654rpx;
+  height: 117rpx;
+  background: linear-gradient(90deg, #b9aafc 0%, #8537ee 100%);
+  border-radius: 1998rpx 1998rpx 1998rpx 1998rpx;
+  color: white !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 30rpx;
+  padding: 5px 18px;
+  margin: 16pt;
+  text-align: center;
+}
+.text-button-link {
+  position: absolute;
+  bottom: 251rpx;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 14px;
+}
+.arrow-icon {
+  width: 22rpx;
+  height: 28rpx;
+  display: inline-block;
+}
+.arrow-icon-small {
+  width: 11rpx;
+  height: 14rpx;
+  display: inline-block;
+}
+.lightLine {
+  height: 1rpx;
+  background: #ececec;
+  color: #ececec;
+}
+.width430 {
+  width: 432rpx;
+  text-align: center;
+}
+.marginTop30 {
+  margin: 30px auto 0;
+}
+.tip {
+  color: #b37df5;
+  font-size: 14px;
+}
+.flex-1 {
+  flex: 1 1 0;
+}
+.gap4 {
+  gap: 8px;
+}
+.text-right {
+  text-align: right;
+}
+.marginLeft12 {
+  margin-left: 12pt;
+}
+.edgeInsetBottom {
+  width: 750rpx;
+  height: var(--window-bottom);
+  background-color: #ffffff;
+}
+
+.fixedView {
+  position: fixed;
+  width: 750rpx;
+  height: 100px;
+  bottom: var(--window-bottom);
+  left: 0;
+}
+.hidden {
+  display: none;
+}
+.err-body {
+  display: flex;
+  gap: 23rpx;
+  text-align: center;
+  margin: 32rpx auto;
+
+  .err-img {
+    width: 154rpx;
+    height: 154rpx;
+    background: #f6f6f6;
+    border-radius: 32rpx;
+  }
+  .err-txt {
+    color: #666;
+    font-size: 24rpx;
+    text-align: center;
+    margin-top: 16rpx;
+  }
+}
+.blod {
+  font-weight: 600;
+}
+.margin32 {
+  margin: 32rpx auto;
+}
+.padding32 {
+  padding: 32rpx;
+}
+.group-wrap {
+  display: flex;
+  justify-content: flex-start;
+  gap: 24rpx;
+  width: max-content;
+}
+.tag-item {
+  height: 68rpx;
+  width: 134rpx;
+  border-radius: 8px;
+  line-height: 68rpx;
+  color: #8f8f8f;
+  text-align: center;
+  font-size: 14px;
+  position: relative;
+}
+.tab-title {
+  position: absolute;
+
+  font-size: 24rpx;
+  line-height: 56rpx;
+  top: 0px;
+  width: 100%;
+  height: 56rpx;
+  color: #999999;
+  border-radius: 28rpx;
+  background-color: #f4f4f4;
+}
+.tag-selected {
+  // background: url(tabBg) no-repeat center;
+  color: #ffffff;
+  font-weight: 500;
+  width: 134rpx;
+  .tab-title {
+    color: white;
+    background-color: transparent;
+  }
+}
+.tabbg {
+  width: 134rpx;
+  height: 68rpx;
+}
+.name-btn {
+  background-color: #f1f1f1;
+  color: #8537ee;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10rpx 18rpx;
+}
+.default-label-txt {
+  font-size: 24rpx;
+  color: #333333;
+  line-height: 34rpx;
+}
+.txtBoldTitle {
+  font-weight: 800;
+  font-size: 28rpx;
+  color: #000000;
+  line-height: 50rpx;
+}
+.txtBig {
+  font-weight: 500;
+  font-size: 44rpx;
+
+  line-height: 30rpx;
+}
+.theme-main-color {
+  color: #8537ee;
+}
+.default-cardBox {
+  background: #ffffff;
+  border-radius: 24rpx;
+  margin: 0 32rpx 32rpx;
+  position: relative;
+}
+//订单---start----
+.template-item {
+  margin-top: 28rpx;
+  padding: 25rpx 28rpx 28rpx 30rpx;
+  background-color: white;
+  border-radius: 20rpx;
+}
+.orderBtn {
+  background-color: rgba(221, 211, 252, 0.91);
+  color: rgba(179, 125, 245, 1);
+  font-size: 14px;
+  text-align: center;
+}
+
+.orderCard {
+  display: flex;
+  gap: 42rpx;
+}
+.order-img {
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 32rpx;
+  //border: 1px solid #e5e5e5;
+  overflow: hidden;
+}
+
+.template-item-img {
+  width: 100%;
+  height: 100%;
+}
+.txt1 {
+  font-weight: 800;
+  font-size: 24rpx;
+  color: #000000;
+}
+.txt2 {
+  font-weight: 400;
+  font-size: 22rpx;
+  color: #999999;
+  line-height: 30rpx;
+}
+.pay-info {
+  font-size: 14px;
+  line-height: 38px;
+}
+//订单---end---
+//自定义导航头---start----
+.nav-transp {
+  position: fixed;
+  top: 36px;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  padding: 0 32rpx;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .nav-title {
+    font-weight: 600;
+    font-size: 36rpx;
+    color: #333333;
+    line-height: 88rpx;
+  }
+  .w50 {
+    width: 50px;
+  }
+}
+//自定义导航头---end----
+.placeBox {
+  margin-top: 20px;
+  margin-bottom: 26rpx;
+  display: flex;
+  .localIcon {
+    width: 48rpx;
+    height: 48rpx;
+    margin-right: 18rpx;
+  }
+  .arrowLineIcon {
+    width: 48rpx;
+    height: 48rpx;
+    margin-left: 42rpx;
+  }
+  .placeOne {
+    font-weight: 500;
+    font-size: 30rpx;
+    color: #000000;
+    line-height: 44rpx;
+  }
+  .placeTwo {
+    font-weight: 400;
+    font-size: 24rpx;
+    color: #999999;
+    line-height: 34rpx;
+  }
 }

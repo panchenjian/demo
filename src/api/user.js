@@ -80,3 +80,13 @@ export function getVipCount(filePath) {
     header: header,
   });
 }
+//获取自己的作品列表
+export function getMyResult(page,category){
+	const token = uni.getStorageSync("token");
+	return request({
+		url:"/production/self",
+		method: "GET",
+		data:{page,size:20,category},
+		header: { Authorization:token },
+	})
+}

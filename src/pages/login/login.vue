@@ -48,6 +48,8 @@ import { mnpLogin } from "../../api/user";
 import { getPolicy } from "../../api/faceSwap";
 import { logoIcon } from "../../common/svgBase64.js";
 import PrivacyDialog from "../../components/PrivacyDialog.vue";
+import { getVipCount } from "../../api/user";
+import { mapMutations } from "vuex";
 
 export default {
   data() {
@@ -91,6 +93,7 @@ export default {
     });
   },
   methods: {
+	  ...mapMutations(['setBalance_draw']),
     handleCheckboxChange(e) {
       this.agreeTerms = e.detail.value.length > 0;
     },
@@ -119,6 +122,9 @@ export default {
       uni.showToast({
         title: "登录成功",
       });
+	  getVipCount().then((res) => {
+	    this.setBalance_draw(res.Data?.number || 0);
+	  });
       if (this.redirectTab) {
         uni.switchTab({
           url: this.redirectTab,

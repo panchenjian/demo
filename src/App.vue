@@ -2,6 +2,11 @@
 export default {
   onLaunch: function () {
     console.log("App Launch");
+    // uni.onTabBarMidButtonTap(()=>{
+    // 	uni.navigateTo({
+    // 		url:"pages/swap/index"
+    // 	})
+    // })
   },
   onShow: function () {
     console.log("App Show");

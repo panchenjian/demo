@@ -1,0 +1,21 @@
+{
+    "id": "shangjiu-steps",
+    "name": "物流信息步骤条",
+    "displayName": "物流信息步骤条",
+    "version": "0.1.0",
+    "description": "uniapp官网的steps 会有中心点与内容的偏差，然后在插件市场看了很多发现有的不兼容，还有各种各样的问题。本以为组件都很难实现，上手才发现非常简单 ，然后自己就封装了个组件。可以改组件内容巨简单",
+    "keywords": [
+        "物流,快递查询,步骤条,物流跟踪"
+    ],
+    "dcloudext": {
+        "type": "component-vue",
+        "sale": {
+            "regular": {
+                "price": "0.00"
+            },
+            "sourcecode": {
+                "price": "0.00"
+            }
+        }
+    }
+}

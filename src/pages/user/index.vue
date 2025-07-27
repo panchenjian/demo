@@ -7,31 +7,32 @@
         <view class="nickname-wrap">
           <image
             class="avatar-img"
-            :src='userInfo?.avatar||"/static/user.png"'
-            mode="aspectFill"
-          ></image>
-          <view class="nickname">{{ userInfo?.nickname || "请先登录" }}</view>
-        </view>
-        <view class="info">
-          <view class="pkg-info" v-if="userInfo?.balance_draw">
-            剩余可用次数：
-            <text class="pkg-cnt">{{ userInfo?.balance_draw || "" }}次</text>
+            :src="userInfo?.avatar || '/static/user.png'"
+            mode="aspectFill"></image>
+          <view class="info">
+            <view class="nickname">{{ userInfo?.nickname || "请先登录" }}</view>
+            <view class="pkg-info" v-if="userInfo?.nickname">
+              剩余可用次数：
+              <text class="pkg-cnt">{{ balance_draw || "" }}次</text>
+            </view>
           </view>
         </view>
       </view>
       <view class="menu-wrapper">
-		  <view class="menu-btn">
-		  	<view class="center-flex"><image src="/static/vip.png" class="btn-icon"></image>会员</view>
-			<view class="menu-des">
-				当前尚未开通会员
-			</view>
-		  </view>
-		  <view class="menu-btn">
-		  	<view class="center-flex"><image src="/static/list.png" class="btn-icon"></image>订单</view>
-		  			<view class="menu-des">
-		  				点击查看我的订单
-		  			</view>
-		  </view>
+        <view class="menu-btn" @tap="$debounceClick(jumpVip)()">
+          <view class="center-flex">
+            <image src="/static/vip.png" class="btn-icon"></image>
+            会员
+          </view>
+          <view class="menu-des">当前尚未开通会员</view>
+        </view>
+        <view class="menu-btn" @tap="$debounceClick(jumpOrder)()">
+          <view class="center-flex">
+            <image src="/static/list.png" class="btn-icon"></image>
+            订单
+          </view>
+          <view class="menu-des">点击查看我的订单</view>
+        </view>
         <!-- <button
           type="plain"
           class="menu-btn"
@@ -55,36 +56,49 @@
         >
           兑换码
         </button> -->
-        
       </view>
     </view>
-	<view class="group-list">
-		<v-tabs v-model="current" :tabs="tabs" @change="changeTab" activeColor="#DDD3FC"></v-tabs>
-	</view>
-	
+    <view class="group-list">
+      <!-- <v-tabs
+        v-model="current"
+        :tabs="tabs"
+        @change="changeTab"
+        lineColor="#B37DF5"
+        activeColor="#B37DF5"
+        lineHeight="2px"
+        lineScale="0.7"></v-tabs> -->
+      <view class="group-wrap">
+        <view
+          v-for="(group, index) in tabs"
+          :key="index"
+          :class="'tag-item ' + (current == index ? 'tag-selected' : '')"
+          @tap="changeTab(index)">
+          <view :class="current == index ? 'tabbg-w' : 'hidden'">
+            <image :src="tabBg" class="tabbg"></image>
+          </view>
+          <view class="tab-title">{{ group }}</view>
+        </view>
+      </view>
+    </view>
+
     <view class="order-area">
       <view
         class="default-wrap"
-        v-if="isLoaded && (!orderList || orderList.length == 0)"
-      >
-		<view v-if="userInfo?.nickname">
-			<image
-			  class="default-img"
-			  src="../../static/order-default-bg.png"
-			></image>
-			<text class="text-tip-center">{{ t("user-index.default-label") }}</text>
-		</view>
-		<view class="text-tip-center" v-else>
-			<image
-			  class="default-img2"
-			  src="../../static/user.png"
-			></image>
-			<text class="text-tip-center">账号未登录</text>
-			<text class="text-tip-center">
-			登录开始专属手办定制！
-			</text>
-			<text class="name-btn-mid" @click="goToLogin">立即登录</text>
-		</view>
+        v-if="isLoaded && (!orderList || orderList.length == 0)">
+        <view v-if="userInfo?.nickname">
+          <image
+            class="default-img"
+            src="../../static/order-default-bg.png"></image>
+          <text class="text-tip-center">
+            {{ t("user-index.default-label") }}
+          </text>
+        </view>
+        <view class="text-tip-center" v-else>
+          <image class="default-img2" src="../../static/empty.png"></image>
+          <text class="text-tip-center0">账号未登录</text>
+          <text class="text-tip-center1">登录开始专属手办定制！</text>
+          <text class="name-btn-mid0" @click="goToLogin">立即登录</text>
+        </view>
       </view>
       <scroll-view
         class="scrollView"
@@ -96,8 +110,7 @@
         :refresher-triggered="isRefresherTriggered"
         @refresherrefresh="onRefresh"
         @refresherrestore="onRestore"
-        @scrolltolower="loadMore"
-      >
+        @scrolltolower="loadMore">
         <view class="list">
           <view class="left-image-list-wrapper image-list-wrapper">
             <view
@@ -105,23 +118,26 @@
               v-for="(item, index) in leftList"
               :key="item.id || index"
               @tap="$debounceClick(goToDetail)(item)"
-              :animation="item.animationData"
-            >
+              :animation="item.animationData">
               <image
-                :src="item.result_image"
+                :src="item.image_2d"
                 mode="widthFix"
                 class="result-image"
-                :lazy-load="true"
-              ></image>
+                :lazy-load="true"></image>
               <view class="result-desc">
-                <view class="result-date">{{
-                  formatDate(item.create_time)
-                }}</view>
-                <image
+                <view class="result-date">
+                  {{ item.title }}
+                </view>
+                <view class="name-btn">
+                  <text>GO</text>
+                  <image
+                    src="/static/goArrow.png"
+                    class="arrow-icon-small"></image>
+                </view>
+                <!-- <image
                   src="/static/delete-avatar-icon.svg"
                   class="delete-icon"
-                  @tap.stop="$debounceClick(onRemoveRecord)(item)"
-                />
+                  @tap.stop="$debounceClick(onRemoveRecord)(item)" /> -->
               </view>
             </view>
           </view>
@@ -131,32 +147,33 @@
               v-for="(item, index) in rightList"
               :key="item.id || index"
               @tap="$debounceClick(goToDetail)(item)"
-              :animation="item.animationData"
-            >
+              :animation="item.animationData">
               <image
-                :src="item.result_image"
+                :src="item.image_2d"
                 mode="widthFix"
                 class="result-image"
-                :lazy-load="true"
-              ></image>
+                :lazy-load="true"></image>
               <view class="result-desc">
-                <view class="result-date">{{
-                  formatDate(item.create_time)
-                }}</view>
-                <image
+                <view class="result-date">
+                  {{ item.title }}
+                </view>
+                <view class="name-btn">
+                  <text>GO</text>
+                  <image
+                    src="/static/goArrow.png"
+                    class="arrow-icon-small"></image>
+                </view>
+                <!-- <image
                   src="/static/delete-avatar-icon.svg"
                   class="delete-icon"
-                  @tap.stop="$debounceClick(onRemoveRecord)(item)"
-                />
+                  @tap.stop="$debounceClick(onRemoveRecord)(item)" /> -->
               </view>
             </view>
           </view>
         </view>
-        <view
-          v-if="isTotallyLoaded && orderList.length >= 8"
-          class="listTips"
-          >{{ t("user-index.to-bottom-tip") }}</view
-        >
+        <view v-if="isTotallyLoaded && orderList.length >= 8" class="listTips">
+          {{ t("user-index.to-bottom-tip") }}
+        </view>
       </scroll-view>
     </view>
   </view>
@@ -173,14 +190,21 @@ import { onLoad, onShow, onUnload } from "@dcloudio/uni-app";
 import ShowQrCode from "../../components/ShowQrCode.vue";
 import CardCodeInput from "../../components/CardCodeInput.vue";
 import { isIOS } from "../../main";
+import { hotIcon, tabBg } from "../../common/svgBase64";
+//import VTabs from "@/uni_modules/v-tabs/components/v-tabs/v-tabs";
 
 const store = useStore();
 const { t } = useI18n();
 
 const current = ref(0);
-const tabs = ref(["待定制","已定制"]);
-const changeTab=(index)=>{}
+const tabs = ref(["待定制", "已定制"]);
+const changeTab = (index) => {
+  current.value = index;
+  initList();
+  fetchGalleryList(true, true);
+};
 
+const balance_draw = computed(() => store.state.balance_draw);
 const orderList = ref([]);
 
 const leftList = computed(() => {
@@ -193,7 +217,7 @@ const rightList = computed(() => {
   return orderList.value.filter((_, index) => index % 2 !== 0);
 });
 
-store.dispatch("fetchAppConfig");
+//store.dispatch("fetchAppConfig");
 
 store.dispatch("fetchUserInfo");
 const userInfo = computed(() => store.state.userInfo);
@@ -209,6 +233,16 @@ const openQrPopup = () => {
 const onRechargeBtnClick = () => {
   uni.navigateTo({
     url: "/pages/recharge/index",
+  });
+};
+const jumpOrder = () => {
+  uni.navigateTo({
+    url: "/pages/order/index",
+  });
+};
+const jumpVip = () => {
+  uni.navigateTo({
+    url: "/pages/user/fellowVip",
   });
 };
 
@@ -263,7 +297,7 @@ const isRefreshing = ref(false);
 
 onLoad((option) => {
   fromPage.value = option.from;
-  fetchGalleryList();
+  if (userInfo.value?.nickname) fetchGalleryList();
 });
 
 onShow(() => {
@@ -314,14 +348,16 @@ const fetchGalleryList = (showLoading = true, reset) => {
   return userRecords(
     {
       page: curPage.value + 1,
-      per_page: perPage.value,
+      // per_page: perPage.value,
+      size: 20,
+      category: current.value ? "2" : "1",
     },
     !showLoading
   )
     .then((res) => {
       uni.hideLoading();
       isLoaded.value = true;
-      if (res.code != 1) {
+      if (res.code != 20000) {
         uni.showToast({
           title: res.msg || t("api-toast.server-error"),
           icon: "none",
@@ -329,11 +365,12 @@ const fetchGalleryList = (showLoading = true, reset) => {
         return;
       }
       console.log("res = ", res);
-      const data = res.data.lists;
+      const data = res.data.items;
       if (data.length < perPage.value) {
         console.log("end");
         isTotallyLoaded.value = true;
       }
+
       if (reset) {
         orderList.value = data;
         curPage.value = 1;
@@ -355,21 +392,22 @@ const loadMore = () => {
 };
 
 const goToDetail = (item) => {
+  store.commit("setTempUuid", item.template_uuid);
   AblumStore.setImageList(store, [
     new AblumType.ImageItem({
-      result_image: item.result_image,
-      template_name: item.template_name,
+      result_image: item.image_2d,
+      template_name: item.title,
     }),
   ]);
   uni.navigateTo({
-    url: "/pages/draw/result",
+    url: "/pages/draw/result?uuid=" + item.uuid,
   });
 };
-const goToLogin =()=>{
-	uni.navigateTo({
-		url: "/pages/login/login",
-	});
-}
+const goToLogin = () => {
+  uni.navigateTo({
+    url: "/pages/login/login",
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -392,26 +430,40 @@ const goToLogin =()=>{
     width: 392rpx;
     height: 336rpx;
   }
-  .default-img2{
-	  width: 164rpx;
-	  height: 164rpx;
+  .default-img2 {
+    width: 164rpx;
+    height: 164rpx;
   }
 
-  
-  .text-tip-center{
-	  color:#BAAAF5;display:block;
-	  text-align: center;line-height: 36px;
+  .text-tip-center {
+    color: #baaaf5;
+    display: block;
+    text-align: center;
+    line-height: 36px;
+  }
+  .text-tip-center0 {
+    font-size: 32rpx;
+    color: #000000;
+    line-height: 38rpx;
+    text-align: center;
+  }
+  .text-tip-center1 {
+    font-size: 28rpx;
+    color: #8537ee;
+    line-height: 38rpx;
+    text-align: center;
   }
 }
 
 .scrollView {
-  height: 100vh;
+  height: 90vh;
   background-size: 100%;
   flex-flow: column;
   overflow: hidden;
   box-sizing: border-box;
   padding: 12px 0;
   display: flex;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
 }
 
 .item:first-child {
@@ -579,25 +631,29 @@ const goToLogin =()=>{
   .image-wrapper {
     position: relative;
     margin-bottom: 2px;
-
+    width: 332rpx;
+    height: 470rpx;
+    background: #ffffff;
+    border-radius: 32rpx;
     .result-image {
-      width: 324rpx;
-      border-radius: 8px;
+      width: 316rpx;
+      height: 374rpx;
+      border-radius: 22rpx;
       background: $image-skeleton-background-pink-font-size-14;
     }
 
-    text {
-      position: absolute;
-      text-align: start;
-      left: 8px;
-      bottom: 8px;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 16px; /* 100% */
-      letter-spacing: 1px;
-      z-index: 3;
-    }
+    // text {
+    //   position: absolute;
+    //   text-align: start;
+    //   left: 8px;
+    //   bottom: 8px;
+    //   color: #fff;
+    //   font-size: 16px;
+    //   font-weight: 600;
+    //   line-height: 16px; /* 100% */
+    //   letter-spacing: 1px;
+    //   z-index: 3;
+    // }
 
     .result-desc {
       height: 36rpx;
@@ -609,13 +665,12 @@ const goToLogin =()=>{
       justify-content: space-between;
       align-items: center;
       color: #000;
-      background-color: #f4f4f4;
       gap: 2px;
       padding: 8px;
 
       .result-date {
-        font-size: 12px;
-        font-weight: 300;
+        font-size: 24rpx;
+        color: #000000;
       }
 
       .delete-icon {
@@ -667,13 +722,15 @@ const goToLogin =()=>{
   flex-direction: column;
   padding: 103px 32rpx 16px 32rpx;
   position: relative;
-&:after{
-	content:'MYDollDoll';
-	    color: rgba(186, 170, 245, 0.19);
-	    font-size: 74px;
-	    font-weight: 700;
-	    line-height: 104px;position: absolute;top:10px;
-}
+  &:after {
+    content: "MYDollDoll";
+    color: rgba(186, 170, 245, 0.19);
+    font-size: 74px;
+    font-weight: 700;
+    line-height: 104px;
+    position: absolute;
+    top: 10px;
+  }
   .left-wrapper {
   }
 
@@ -691,30 +748,35 @@ const goToLogin =()=>{
       .nickname {
         color: #000;
         text-align: left;
-        font-family: PingFang SC;
-        font-size: 17px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 20px; /* 125% */
-        letter-spacing: -0.5px;
-        margin-left: 20rpx;
+        font-family: HarmonyOS Sans SC, HarmonyOS Sans SC;
+        font-weight: bold;
+        font-size: 34rpx;
+        line-height: 46rpx;
+        max-width: 380rpx;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        height: 22px;
+        margin-bottom: 8px;
       }
     }
 
     .avatar-img {
-      width: 164rpx;
-      height: 164rpx;
+      width: 120rpx;
+      height: 120rpx;
       border-radius: 50%;
-      margin-right: 16rpx;
+      margin-right: 24rpx;
+      border: 2rpx solid #ffffff;
     }
 
     .info {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      flex-direction: column;
-      padding-top: 2px;
-      gap: 6px;
+      // display: flex;
+      // justify-content: center;
+      // align-items: flex-start;
+      // flex-direction: column;
+      // padding-top: 2px;
+      // gap: 6px;
 
       .pkg-member-end-time {
         color: rgba(255, 255, 255, 0.64);
@@ -738,16 +800,14 @@ const goToLogin =()=>{
       }
 
       .pkg-info {
-        color: rgba(255, 255, 255, 0.64);
-        text-align: center;
-        font-size: 14px;
         font-weight: 400;
-        line-height: 16px; /* 133.333% */
-        letter-spacing: -0.5px;
-        display: flex;
-        align-items: flex-start;
-		.pkg-cnt{
-		color:#EE00F3}
+        font-size: 24rpx;
+        color: rgba(0, 0, 0, 0.6);
+        line-height: 32rpx;
+        margin-left: 20rpx;
+        .pkg-cnt {
+          color: #ee00f3;
+        }
       }
     }
   }
@@ -758,19 +818,25 @@ const goToLogin =()=>{
     justify-content: space-between;
     width: 100%;
     margin-top: 30rpx;
-	gap:16rpx;
-	line-height: 23px;
-	.btn-icon{width:38rpx;height:38rpx;margin-right:8px;}
+    gap: 16rpx;
+    line-height: 23px;
+    .btn-icon {
+      width: 38rpx;
+      height: 38rpx;
+      margin-right: 8px;
+    }
     .menu-btn {
-      margin: 0;padding:8px;
+      margin: 0;
+      padding: 32rpx 48rpx;
       min-width: 208rpx;
-      
-      flex-shrink: 0;
-	  flex-grow: 1;
-      border-radius: 16rpx;
-      background-color: rgba(221,211,252,0.91);
 
-      color: #7C43CC;
+      flex-shrink: 0;
+      flex-grow: 1;
+      background: #ffffff;
+      box-shadow: 7rpx 14rpx 28rpx 7rpx #c8beeb;
+      border-radius: 35rpx;
+
+      color: #7c43cc;
       font-size: 14px;
       font-style: normal;
       font-weight: 600;
@@ -779,9 +845,12 @@ const goToLogin =()=>{
       // justify-content: center;
       // align-items: center;
     }
-	.menu-des{
-		font-size: 12px;margin-top: 4px;
-	}
+    .menu-des {
+      font-size: 12px;
+      margin-top: 16rpx;
+      color: #ab9db5;
+      font-size: 28rpx;
+    }
   }
 
   .menu-wrapper-double-btn {
@@ -791,6 +860,17 @@ const goToLogin =()=>{
       margin: 0;
     }
   }
-  .group-list{border-radius: 36rpx;background-color: white;border:1px solid rgba(221,211,252,0.91)}
+}
+.group-list {
+  border-radius: 36rpx 36rpx 0 0;
+  padding: 32rpx;
+  background-color: white;
+  //border: 1px solid rgba(221, 211, 252, 0.91);
+}
+.name-btn-mid0 {
+  width: 315rpx;
+  height: 88rpx;
+  background: linear-gradient(90deg, #b9aafc 0%, #8537ee 100%);
+  border-radius: 1998rpx 1998rpx 1998rpx 1998rpx;
 }
 </style>
