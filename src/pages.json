@@ -85,12 +85,12 @@
         "navigationStyle": "custom"
       }
     },
-	{
-	  "path": "pages/order/express",
-	  "style": {
-	    "navigationBarTitleText": "物流详情"
-	  }
-	},
+    {
+      "path": "pages/order/express",
+      "style": {
+        "navigationBarTitleText": "物流详情"
+      }
+    },
     {
       "path": "pages/address/index",
       "style": {
@@ -116,13 +116,6 @@
     "selectedColor": "#B37DF5%",
     "borderStyle": "white",
     "backgroundColor": "#F5F6F7",
-    // "midButton": {
-    //   "iconPath": "static/fast.png",
-    //   "height": "65px",
-    //   "width": "80px",
-    //   "iconWidth": "94rpx",
-    //   "text": "快速定制"
-    // },
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -143,6 +136,14 @@
         "text": "我的"
       }
     ]
+    // "midButton": {
+    //   "width": "80px",
+    //   "height": "50px",
+    //   "text": "快速定制",
+    //   "iconPath": "static/fast.png",
+    //   "iconWidth": "24px"
+    //   //"backgroundImage": "static/image/midButton_backgroundImage.png"
+    // }
   },
   "condition": {
     //模式配置，仅开发期间生效

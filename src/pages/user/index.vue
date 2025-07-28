@@ -417,7 +417,9 @@ const goToLogin = () => {
 .content {
   height: 100%;
 }
-
+.order-area {
+  background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
+}
 .default-wrap {
   display: flex;
   flex-direction: column;
@@ -456,12 +458,12 @@ const goToLogin = () => {
 }
 
 .scrollView {
-  height: 90vh;
+  height: calc(100vh - 486rpx);
   background-size: 100%;
   flex-flow: column;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 12px 0;
+  //padding: 12px 0;
   display: flex;
   background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
 }
@@ -698,38 +700,33 @@ const goToLogin = () => {
   .left-image-list-wrapper {
     padding-left: 32rpx;
     padding-right: 0;
-    .image-wrapper:nth-child(odd) {
-      .result-image {
-        width: 330rpx;
-      }
-    }
 
-    .image-wrapper:nth-child(even) {
+    .image-wrapper {
       .result-image {
-        width: 324rpx;
-        height: 206px;
+        width: 316rpx;
+        height: 374rpx;
       }
     }
   }
 }
 
 .menu-area {
-  background: url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20version%3D%221.1%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%221%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%220%22%20gradientTransform%3D%22matrix(6.123233995736766e-17%2C%201%2C%20-0.3508284023668639%2C%206.123233995736766e-17%2C%200.5%2C%200)%22%3E%3Cstop%20stop-color%3D%22%23d5c9fb%22%20stop-opacity%3D%221%22%20offset%3D%220%22%3E%3C%2Fstop%3E%3Cstop%20stop-color%3D%22%23ddd3fc%22%20stop-opacity%3D%220.91%22%20offset%3D%220.181%22%3E%3C%2Fstop%3E%3Cstop%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%220.77%22%20offset%3D%221%22%3E%3C%2Fstop%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url(%231)%22%3E%3C%2Frect%3E%3C%2Fsvg%3E");
-
+  //background: url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20version%3D%221.1%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%221%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%220%22%20gradientTransform%3D%22matrix(6.123233995736766e-17%2C%201%2C%20-0.3508284023668639%2C%206.123233995736766e-17%2C%200.5%2C%200)%22%3E%3Cstop%20stop-color%3D%22%23d5c9fb%22%20stop-opacity%3D%221%22%20offset%3D%220%22%3E%3C%2Fstop%3E%3Cstop%20stop-color%3D%22%23ddd3fc%22%20stop-opacity%3D%220.91%22%20offset%3D%220.181%22%3E%3C%2Fstop%3E%3Cstop%20stop-color%3D%22%23ffffff%22%20stop-opacity%3D%220.77%22%20offset%3D%221%22%3E%3C%2Fstop%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url(%231)%22%3E%3C%2Frect%3E%3C%2Fsvg%3E");
+  background: linear-gradient(180deg, #cabffb 0%, #dfdafa 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 103px 32rpx 16px 32rpx;
+  padding: 68px 32rpx 46px 32rpx;
   position: relative;
   &:after {
     content: "MYDollDoll";
-    color: rgba(186, 170, 245, 0.19);
+    color: rgba(186, 170, 245, 0.39);
     font-size: 74px;
     font-weight: 700;
     line-height: 104px;
     position: absolute;
-    top: 10px;
+    top: -24px;
   }
   .left-wrapper {
   }
@@ -758,7 +755,7 @@ const goToLogin = () => {
         text-overflow: ellipsis;
         white-space: nowrap;
         height: 22px;
-        margin-bottom: 8px;
+        margin-bottom: 8rpx;
       }
     }
 
@@ -804,7 +801,6 @@ const goToLogin = () => {
         font-size: 24rpx;
         color: rgba(0, 0, 0, 0.6);
         line-height: 32rpx;
-        margin-left: 20rpx;
         .pkg-cnt {
           color: #ee00f3;
         }
@@ -818,17 +814,19 @@ const goToLogin = () => {
     justify-content: space-between;
     width: 100%;
     margin-top: 30rpx;
-    gap: 16rpx;
-    line-height: 23px;
+    gap: 42rpx;
     .btn-icon {
-      width: 38rpx;
-      height: 38rpx;
-      margin-right: 8px;
+      width: 58rpx;
+      height: 58rpx;
+      margin-right: 38rpx;
     }
     .menu-btn {
       margin: 0;
       padding: 32rpx 48rpx;
-      min-width: 208rpx;
+      //min-width: 208rpx;
+      max-width: 314rpx;
+      // height: 168rpx;
+      // box-sizing: border-box;
 
       flex-shrink: 0;
       flex-grow: 1;
@@ -836,20 +834,19 @@ const goToLogin = () => {
       box-shadow: 7rpx 14rpx 28rpx 7rpx #c8beeb;
       border-radius: 35rpx;
 
-      color: #7c43cc;
-      font-size: 14px;
-      font-style: normal;
       font-weight: 600;
-      line-height: 18px; /* 120% */
+      font-size: 40rpx;
+      color: #333333;
+
       // display: flex;
       // justify-content: center;
       // align-items: center;
     }
     .menu-des {
-      font-size: 12px;
-      margin-top: 16rpx;
-      color: #ab9db5;
+      font-weight: 400;
       font-size: 28rpx;
+      color: #ab9db5;
+      margin-top: 16rpx;
     }
   }
 
@@ -865,6 +862,9 @@ const goToLogin = () => {
   border-radius: 36rpx 36rpx 0 0;
   padding: 32rpx;
   background-color: white;
+  margin-top: -30px;
+  position: relative;
+  z-index: 1;
   //border: 1px solid rgba(221, 211, 252, 0.91);
 }
 .name-btn-mid0 {

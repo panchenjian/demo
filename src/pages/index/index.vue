@@ -14,7 +14,7 @@
               :src="group.image_url"
               mode="aspectFill"
               :lazy-load="true"
-              class="template-item-img"></image>
+              class="template-item-img-home"></image>
           </view>
         </swiper-item>
       </swiper>
@@ -76,7 +76,7 @@
             <view
               v-for="(template, index) in groupList"
               :key="index"
-              :class="'template-item '"
+              :class="'template-item-home '"
               @tap="$debounceClick(onSelectTemplate)(template)">
               <view style="display: flex; flex-direction: column">
                 <view class="fire" v-if="index < 3">
@@ -86,7 +86,7 @@
                   :src="template.cover"
                   mode="aspectFill"
                   :lazy-load="true"
-                  class="template-item-img"></image>
+                  class="template-item-img-home"></image>
                 <view class="template-desc">
                   <view class="name">
                     <text>{{ template.title }}</text>
@@ -235,6 +235,7 @@ onShareAppMessage(() => {
 
 .scroll-view_Y {
   height: 100%;
+  background-color: #f6f6f6;
 }
 
 .swiperWrap {
@@ -266,9 +267,9 @@ onShareAppMessage(() => {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   justify-items: center;
   align-items: center;
-  gap: 12px;
-  margin-right: 40rpx;
-  margin-left: 40rpx;
+  gap: 22rpx;
+  margin-right: 32rpx;
+  margin-left: 32rpx;
   padding-bottom: 90rpx;
 }
 
@@ -318,8 +319,8 @@ onShareAppMessage(() => {
   padding-bottom: 40px;
 }
 
-.template-item {
-  width: 100%;
+.template-item-home {
+  width: 332rpx;
   overflow: hidden;
   position: relative;
   background-color: white;
@@ -331,15 +332,15 @@ onShareAppMessage(() => {
   width: 60rpx;
   height: 40rpx;
   display: inline-block;
-  top: 50rpx;
-  left: 50rpx;
+  top: 22rpx;
+  left: 22rpx;
   .fire-image {
     width: 100%;
     height: 100%;
   }
 }
 
-.template-item-img {
+.template-item-img-home {
   width: 100%;
   height: 374rpx;
   border-radius: 22rpx;
@@ -487,6 +488,4 @@ onShareAppMessage(() => {
   text-align: center;
   color: white;
 }
-
-
 </style>
