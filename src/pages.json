@@ -60,12 +60,12 @@
         // "transparentTitle": "auto"
       }
     },
-    {
-      "path": "pages/recharge/index",
-      "style": {
-        "navigationBarTitleText": "充值中心"
-      }
-    },
+    // {
+    //   "path": "pages/recharge/index",
+    //   "style": {
+    //     "navigationBarTitleText": "充值中心"
+    //   }
+    // },
     {
       "path": "pages/order/result",
       "style": {

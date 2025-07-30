@@ -42,6 +42,14 @@ export function createAvatar(filePath) {
     name: "file",
     header: header,
   });
+  // let params = {
+  //   url: `/system/upload`,
+  //   method: "POST",
+  //   data: {file:filePath},
+  //   header: { Authorization: token },
+  // };
+  // params.loadingToastTips = "图片上传中...";
+  // return request(params);
 }
 //生成2D图
 export function createSwap(data) {

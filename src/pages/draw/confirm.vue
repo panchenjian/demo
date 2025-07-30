@@ -68,6 +68,12 @@
         </view>
       </view> -->
       <view class="add-file-box" @tap="$debounceClick(chooseImage)('album')">
+        <view class="user-file-box" v-if="selectedAvatar">
+          <image
+            :src="selectedAvatar"
+            mode="aspectFill"
+            class="user-selected"></image>
+        </view>
         <image class="con-image" src="/static/imgFrame.png"></image>
         <div class="add-file-label">点击上传图片</div>
       </view>
@@ -205,8 +211,8 @@ import { getTmpDetail } from "../../api/swapTemplate.js";
 import { imageMode } from "../../context.js";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import { closeIcon } from "../../common/svgBase64";
-import { requireLogin } from "../../utils/request";
-import { DraftStore } from "../../store/draft";
+import { baseUrl, requireLogin } from "../../utils/request";
+import { DraftStore, DraftType } from "../../store/draft";
 const closeIconForImage = ref(closeIcon);
 
 import { useStore } from "vuex";
@@ -267,22 +273,60 @@ const confirmUpload = async (filePath) => {
 
   uni.showLoading({ title: "数字分身制作中", mask: true });
   try {
-    const res = await createAvatar(filePath);
+    /*const res = await createAvatar(filePath);
     uni.hideLoading();
-    const data = JSON.parse(res.data);
+    const data = res.data; //JSON.parse(res.data);
     if (data.code === -1) {
       requireLogin({
         toastMsg: t("api-toast.login-status-expired"),
       });
     }
-    if (data.code !== 1) {
+    if (data.code !== 20000) {
       uni.showToast({
         title: data.msg || t("api-toast.server-error"),
         icon: "none",
       });
       return;
     }
-    getAvatarList();
+    //getAvatarList();
+    selectedAvatar.value = res.data.url;*/
+    const token = uni.getStorageSync("token");
+
+    // 如果存在 token，则将其添加到请求头中
+    let header;
+    if (token) {
+      header = { Authorization: token };
+    } else {
+      requireLogin();
+      return Promise.reject(new Error("No token found"));
+    }
+
+    uni.uploadFile({
+      //url: `${baseUrl}/api/face_swap/create_avatar`,
+      url: `${baseUrl}/system/upload`,
+      filePath: filePath,
+      name: "file",
+      header: header,
+      success: (res) => {
+        uni.hideLoading();
+        const data = JSON.parse(res.data);
+        if (data.code === -1) {
+          requireLogin({
+            toastMsg: t("api-toast.login-status-expired"),
+          });
+        }
+        if (data.code !== 20000) {
+          uni.showToast({
+            title: data.msg || t("api-toast.server-error"),
+            icon: "none",
+          });
+          return;
+        }
+        //getAvatarList();
+        selectedAvatar.value = data.data.url;
+      },
+      fail: () => {},
+    });
   } catch (err) {
     console.log(err);
     uni.hideLoading();
@@ -335,12 +379,23 @@ const getTemplateDetail = async () => {
 };
 const designImage = async () => {
   //他们要搞云上传图片,这里直接模拟已经得到云图片地址
-  digitalAvatarList.value = [
-    {
-      id: "https://img.zolimarket.com/sute/172707461732698639482",
-      face_image: "https://img.zolimarket.com/sute/172707461732698639482",
-    },
-  ];
+  // digitalAvatarList.value = [
+  //   {
+  //     id: selectedAvatar.value||"https://mydolldoll-test.oss-cn-shanghai.aliyuncs.com/7453ac0a-6bbc-46ae-8723-d2ba74a9128b",
+  //     face_image: selectedAvatar.value||"https://mydolldoll-test.oss-cn-shanghai.aliyuncs.com/7453ac0a-6bbc-46ae-8723-d2ba74a9128b",
+  //   },
+  // ];
+  // selectedAvatar.value =
+  //   "https://mydolldoll-test.oss-cn-shanghai.aliyuncs.com/7453ac0a-6bbc-46ae-8723-d2ba74a9128b";
+  if (!selectedAvatar.value) {
+    uni.showToast({
+      title: "请选择一张图片",
+      icon: "none",
+    });
+    return;
+  }
+
+  onSubmit();
 };
 
 const getUserBalance = () => {
@@ -384,32 +439,41 @@ const onSubmit = async () => {
     });
     return;
   }
-
+  //debugger;
+  let temp_uuid = userDraft.value.template.id;
+  store.commit("setTempUuid", temp_uuid);
   const res = await createSwap({
-    template_uuid: userDraft.value.template.id,
+    template_uuid: temp_uuid,
     // avatar_id: selectedAvatar.value.id,
-    origin_image: selectedAvatar.value.id,
+    origin_image: selectedAvatar.value,
   });
 
-  if (res.code !== 1) {
+  if (res.code !== 20000) {
     uni.showToast({
       title: res.msg || "服务器开小差了",
       icon: "none",
     });
-    uni.navigateTo({
-      url: "/pages/draw/result?uuid=" + res.uuid,
-    });
+    // uni.navigateTo({
+    //   url: "/pages/draw/result?uuid=" + res.uuid,
+    // });
     return;
   }
-
-  AblumStore.setImageList(store, [
-    new AblumType.ImageItem({
-      result_image: res.data.result.result_image,
-      template_name: userDraft.value.template.name,
-    }),
-  ]);
+  DraftStore.setTemplate(
+    store,
+    new DraftType.Template({
+      id: temp_uuid,
+      name: userDraft.value.template.name,
+      target_image: selectedAvatar.value,
+    })
+  );
+  // AblumStore.setImageList(store, [
+  //   new AblumType.ImageItem({
+  //     result_image: res.data.result.result_image,
+  //     template_name: userDraft.value.template.name,
+  //   }),
+  // ]);
   uni.navigateTo({
-    url: "/pages/draw/result",
+    url: "/pages/draw/result?uuid=" + res.uuid,
   });
 };
 </script>
@@ -438,7 +502,7 @@ const onSubmit = async () => {
 }
 .add-file-box {
   width: 686rpx;
-  height: 314rpx;
+  min-height: 314rpx;
   background: #ffffff;
   border-radius: 32rpx 32rpx 32rpx 32rpx;
   border: 2rpx dashed #8537ee;
@@ -454,8 +518,21 @@ const onSubmit = async () => {
     font-weight: 600;
     font-size: 32rpx;
     margin-top: 20rpx;
+    margin-bottom: 20px;
     color: #000000;
   }
+}
+.user-file-box {
+  width: 70%;
+  height: 100px;
+  border-radius: 32rpx;
+  overflow: hidden;
+  margin: 20px auto;
+}
+.user-selected {
+  // width: auto;
+  // height: 100px;
+  // border-radius: 32rpx;
 }
 
 .gallaryTheme {

@@ -39,7 +39,7 @@ export async function checkLogin(loginParam) {
   } else {
     requireLogin(loginParam);
   }
-  return res && res.code == 1;
+  return res && res.code == 20000;
 }
 
 // 保存图片到本地相册
