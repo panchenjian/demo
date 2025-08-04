@@ -35,6 +35,7 @@
       </checkbox-group> -->
         <uni-data-checkbox
           multiple
+          selectedColor="#8537EE"
           v-model="baseFormData.is_default"
           :localdata="hobby"></uni-data-checkbox>
       </uni-forms>
@@ -62,10 +63,14 @@
           </view>
           <view class="space-b-flex">
             <view @tap.stop="$debounceClick(setDefaultAddress)(item, index)">
-              <label>
+              <!-- <label>
                 <radio :value="item.uuid" :checked="index === current" />
                 <text>默认地址</text>
-              </label>
+              </label> -->
+              <uni-data-checkbox
+                selectedColor="#8537EE"
+                :value="index === current ? 1 : 0"
+                :localdata="hobby2"></uni-data-checkbox>
             </view>
             <view class="">
               <button
@@ -112,6 +117,7 @@ import {
   delAddress,
   setDefault,
 } from "../../api/address";
+import {updateOrderAddress} from '../../api/order';
 // import MosoweCascade from "@/uni_modules/mosowe-cascade/components/mosowe-cascade/mosowe-cascade";
 
 const store = useStore();
@@ -152,8 +158,15 @@ const hobby = ref([
     value: 1,
   },
 ]);
+const hobby2 = ref([
+  {
+    text: "默认地址",
+    value: 1,
+  },
+]);
 const addressUUId = ref();
-const PCD_uuid = ref();
+const PCD_uuid = ref();//级联地址组件选择的值
+const orderUUid=ref();
 
 // 无默认数据
 const noDefaultValue = ref([]);
@@ -171,9 +184,13 @@ const getDefaultAddress = () => {
 };
 
 onLoad(async (option) => {
-  if (option.uuid) {
+  if (option.uuid) {//没下单时改地址
     addressUUId.value = option.uuid;
-  } else {
+  } else if(option.orderId){//已订单改地址
+	  orderUUid.value=option.orderId;
+	  isForm.value = false;
+	  getDefaultAddress();
+  }else {
     isForm.value = false;
     getDefaultAddress();
     // getAddressList({ page: 1, size: 20 }).then((res) => {});
@@ -194,12 +211,12 @@ const nodeClick = (e, level, callBack) => {
   if (level >= 3) {
     callBack([]);
   } else {
-    getCityList({ depth: level + 1, region_id: e.value }).then((res) => {
+    getCityList({ depth: level + 1, region_id: e?.value || "" }).then((res) => {
       const list = res.data.items.map((x) => {
         return {
           text: x.name,
           value: x.region_id,
-          pid: e.value, //x.region_id + "_" + level,
+          pid: e?.value || x.region_id + "_0", //x.region_id + "_" + level,
           isLeaf: level >= 2 ? true : false,
           children: [],
         };
@@ -230,10 +247,22 @@ const confirm = (data) => {
     area_id: data[2]?.value || "",
   };
 };
-const chooseAddress = (item, index) => {
+const chooseAddress =async (item, index) => {
   currentTmpIndex.value = index;
-  store.commit("setTempAddressUuid", item.uuid);
+  if(orderUUid.value){
+	  let res=await updateOrderAddress(orderUUid.value,item.uuid);
+	  if(res.code!==20000){
+		  uni.showToast({
+		    icon: "error",
+		    title: res.message||"修改地址失败",
+		  });
+		  return;
+	  }
+  }else{
+	  store.commit("setTempAddressUuid", item.uuid);
+  }
   
+
   setTimeout(() => {
     uni.navigateBack();
   }, 300);
@@ -243,18 +272,22 @@ const addAddress = () => {
   addressUUId.value = "";
 };
 const saveAddress = () => {
-  let data = {
-    ...baseFormData.value,
-    is_default: baseFormData.value.is_default.length,
-    ...PCD_uuid.value,
-  };
-  console.log(data);
   baseForm.value.validate().then((res) => {
-    //console.log("success", res);
+    //console.log("校验success", res);
+    let data = {
+      ...baseFormData.value,
+      is_default: baseFormData.value.is_default.length,
+      ...PCD_uuid.value,
+    };
+    //console.log("保存地址", data);
     if (addressUUId.value) {
       updateAddress(data, addressUUId.value).then((res) => {
         if (res.code === 20000) {
-          uni.navigateBack();
+          isForm.value = false;
+          getDefaultAddress();
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 300);
         }
       });
     } else {

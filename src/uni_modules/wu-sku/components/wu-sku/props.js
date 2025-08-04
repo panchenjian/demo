@@ -57,6 +57,10 @@ export default {
 			default: "确定",
 			type: String
 		},
+		totalMny:{
+			default: 0,
+			type: Number
+		},
 		// 不相关sku是否禁用
 		skuUnrelatedDisabled: {
 			default: false,

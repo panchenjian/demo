@@ -12,9 +12,10 @@ uni.addInterceptor("request", {
         mask: true,
       });
     // console.log(args, 'invoke')
+
     if (args.loginRequired) {
       const token = uni.getStorageSync("token");
-
+      console.log("请求需要登录信息");
       // 如果存在 token，则将其添加到请求头中
       if (token) {
         args.header = {
@@ -74,7 +75,7 @@ export default function request(options) {
           ? defaultLoadingTitle
           : options.loadingToastTips,
       success: (res) => {
-        if (res.data.code === 40001) {
+        if (res.data.code === 40001 && options.loginRequired) {
           // 如果返回状态码为 -1，则提示用户重新登录
           requireLogin({
             ...options.loginParam,
@@ -100,7 +101,7 @@ export function requireLogin(
     redirectTab: "",
   }
 ) {
-	//return;//暂时不跳转登录页
+  //return;//暂时不跳转登录页
   const routerFN = redirect || delta ? uni.navigateTo : uni.reLaunch;
   if (disabledToast) {
     routerFN({

@@ -5,7 +5,8 @@
         <view class="nickname-wrap">
           <image
             :src="userDraft?.template?.target_image || '/static/user.png'"
-            class="avatar-img"></image>
+            class="avatar-img"
+            mode="widthFix"></image>
           <view>
             <text class="currTemplateName">
               {{ userDraft?.template?.name }}
@@ -178,6 +179,7 @@
                 userDraft?.template?.target_image ||
                 'http://gips2.baidu.com/it/u=1674525583,3037683813&fm=3028&app=3028&f=JPEG&fmt=auto?w=1024&h=1024'
               "
+              :totalMny="comPrice"
               btnConfirmText="立即支付"
               notSelectSku="请选择完整的商品信息"
               @skuChange="skuChange"
@@ -226,7 +228,13 @@
                     <text class="theme-main-color">
                       ￥
                       <text class="txtBig">
-                        {{ selectSku.price * buyNum + cal_price }}
+                        {{
+                          selectSku.price
+                            ? new Big(selectSku.price)
+                                .times(buyNum)
+                                .plus(new Big(cal_price))
+                            : 0
+                        }}
                       </text>
                     </text>
                   </view>
@@ -244,6 +252,7 @@
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
+import Big from "big.js";
 import { requestAuthThenSaveImages } from "../../utils/common";
 import { blackDownloadIcon, blackShareIcon } from "../../common/svgBase64";
 import { defaultLoadingTitle } from "../../common/variable.js";
@@ -311,6 +320,7 @@ const isDefaultAddress = computed(() => {
       };
 });
 
+const pollingFinished = ref(false);
 const production_uuid = ref("");
 const photoAlbumType = ref("");
 const hasAlbumWritePermission = ref(true);
@@ -506,6 +516,15 @@ let cal_price = ref(8);
 let skuShow = ref(false);
 let selectSku = ref({ price: 0 });
 let buyNum = ref(1);
+const comPrice = computed(() => {
+  return selectSku.value.price
+    ? Number(
+        new Big(selectSku.value.price)
+          .times(buyNum.value)
+          .plus(new Big(cal_price.value))
+      )
+    : 0;
+});
 // sku列表
 let skus = ref([
   // {
@@ -541,7 +560,7 @@ const getSkuItems = () => {
       });
       return {
         id: item.uuid,
-        price: item.price,
+        price: new Big(item.price).div(100),
         stock: item.stock,
         sku_attrs: tmpAttr,
       };
@@ -560,7 +579,7 @@ let skuChange = (sku) => {
   const default_address = isDefaultAddress.value; //baseAddress.value.find((x) => x.is_default);
   if (default_address.uuid) {
     getExpressPrice(default_address.uuid).then((res) => {
-      cal_price.value = res?.data?.price || 8;
+      cal_price.value = new Big(res?.data?.price).div(100) || 8;
     });
   }
 };
@@ -586,11 +605,11 @@ const showLoadingOverlay = async (orderID) => {
       if (res.code !== 20000) {
         throw new Error(res.msg || "服务器开小差了");
       }
-
+      //debugger;
       if (res.data.order_status === 2) {
         clearInterval(intervalId.value);
         uni.hideLoading();
-        !pollingFinished.value && onPaySuccess();
+        !pollingFinished.value && onPaySuccess(orderID);
         pollingFinished.value = true;
       }
     } catch (error) {
@@ -605,17 +624,20 @@ const showLoadingOverlay = async (orderID) => {
   }, 800);
 };
 
-const onPaySuccess = async () => {
+const onPaySuccess = async (orderID) => {
   await store.dispatch("fetchUserInfo");
 
   uni.showToast({
-    title: "充值成功！",
+    title: "购买成功！",
     duration: 2000,
     mask: true,
   });
 
   setTimeout(() => {
-    uni.navigateBack();
+    //uni.navigateBack();
+    uni.navigateTo({
+      url: "/pages/order/result?orderId="+orderID,
+    });
   }, 2000);
 };
 const submitOrder = async (e) => {
@@ -629,13 +651,19 @@ const submitOrder = async (e) => {
       });
       return;
     }
+
     const orderRes = await submitProdOrder({
       production_uuid: production_uuid.value,
       address_uuid: default_address?.uuid || "",
       sku_uuid: selectSku.value.id,
       number: e.num || 1,
-      price: selectSku.value.price * e.num + cal_price.value, //总价
-      express_price: cal_price.value, //运费
+      price:
+        Number(
+          new Big(selectSku.value.price)
+            .times(e.num)
+            .plus(new Big(cal_price.value))
+        ) * 100, //selectSku.value.price * e.num + cal_price.value, //总价-展示除100，传后端还是要乘以100
+      express_price: Number(new Big(cal_price.value).times(100)), //运费
     });
     if (orderRes.code !== 20000) {
       throw new Error(orderRes.msg || "服务器开小差了");
@@ -952,7 +980,10 @@ const submitOrder = async (e) => {
 }
 
 .priceDetail {
+  background: #fff;
+  border-radius: 32rpx;
   padding: 20rpx 28rpx;
+  margin-top: 24rpx;
   display: flex;
   flex-direction: column;
   gap: 10px;

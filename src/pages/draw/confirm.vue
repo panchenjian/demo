@@ -27,7 +27,7 @@
                   height: 'auto',
                   borderRadius: '8px',
                 }" />
-              <view
+              <!-- <view
                 class="template-desc"
                 :style="{
                   width: `${renderWidth}rpx`,
@@ -39,7 +39,7 @@
                       : template.name
                   }}
                 </view>
-              </view>
+              </view> -->
             </swiper-item>
           </swiper>
         </view>
@@ -71,11 +71,13 @@
         <view class="user-file-box" v-if="selectedAvatar">
           <image
             :src="selectedAvatar"
-            mode="aspectFill"
+            mode="aspectFit"
             class="user-selected"></image>
         </view>
-        <image class="con-image" src="/static/imgFrame.png"></image>
-        <div class="add-file-label">点击上传图片</div>
+        <view class="width430" v-else>
+          <image class="con-image" src="/static/imgFrame.png"></image>
+          <div class="add-file-label">点击上传图片</div>
+        </view>
       </view>
       <view style="text-align: left; width: 100%">
         <image src="/static/errorTitle.png" class="error-title"></image>
@@ -87,7 +89,7 @@
         </view>
       </view>
       <view
-        class="name-btn-big marginTop30"
+        class="name-btn-big marginTop20"
         @tap="$debounceClick(designImage)()">
         <view class="big-text">开始设计</view>
         <view class="second-text">
@@ -463,7 +465,7 @@ const onSubmit = async () => {
     new DraftType.Template({
       id: temp_uuid,
       name: userDraft.value.template.name,
-      target_image: selectedAvatar.value,
+      target_image: userDraft.value.template.target_image, //模板图-》用户上传图//selectedAvatar.value,
     })
   );
   // AblumStore.setImageList(store, [
@@ -503,6 +505,7 @@ const onSubmit = async () => {
 .add-file-box {
   width: 686rpx;
   min-height: 314rpx;
+  padding: 20px 0;
   background: #ffffff;
   border-radius: 32rpx 32rpx 32rpx 32rpx;
   border: 2rpx dashed #8537ee;
@@ -518,16 +521,15 @@ const onSubmit = async () => {
     font-weight: 600;
     font-size: 32rpx;
     margin-top: 20rpx;
-    margin-bottom: 20px;
     color: #000000;
   }
 }
 .user-file-box {
-  width: 70%;
-  height: 100px;
+  width: 96%;
+  height: 96%;
   border-radius: 32rpx;
   overflow: hidden;
-  margin: 20px auto;
+  margin: 2% auto;
 }
 .user-selected {
   // width: auto;
@@ -907,6 +909,7 @@ const onSubmit = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 32rpx;
 
   .template-desc {
     position: absolute;
@@ -919,7 +922,7 @@ const onSubmit = async () => {
     justify-content: center;
     align-items: center;
     color: #000;
-    background-color: #f4f4f4;
+    //background-color: #f4f4f4;
     gap: 4px;
     padding: 8px 8px 28px 8px;
 

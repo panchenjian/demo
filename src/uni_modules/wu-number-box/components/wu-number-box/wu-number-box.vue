@@ -131,7 +131,7 @@
 				const disabled = this.disabled || this.disabledInput
 				const style = {
 					color: this.color,
-					backgroundColor: this.bgColor,
+					backgroundColor: '#fff',//this.bgColor,
 					height: this.$w.addUnit(this.buttonSize),
 					width: this.$w.addUnit(this.inputWidth)
 				}

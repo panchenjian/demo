@@ -85,7 +85,7 @@
       <view
         class="default-wrap"
         v-if="isLoaded && (!orderList || orderList.length == 0)">
-        <view v-if="userInfo?.nickname">
+        <view class="center-center" v-if="userInfo?.nickname">
           <image
             class="default-img"
             src="../../static/order-default-bg.png"></image>
@@ -93,7 +93,7 @@
             {{ t("user-index.default-label") }}
           </text>
         </view>
-        <view class="text-tip-center" v-else>
+        <view class="text-tip-center mtop39" v-else>
           <image class="default-img2" src="../../static/empty.png"></image>
           <text class="text-tip-center0">账号未登录</text>
           <text class="text-tip-center1">登录开始专属手办定制！</text>
@@ -101,7 +101,7 @@
         </view>
       </view>
       <scroll-view
-        class="scrollView"
+        :class="orderList.length ? 'scrollView' : 'hidden'"
         scroll-y="true"
         enhanced="{{true}}"
         show-scrollbar="{{false}}"
@@ -121,7 +121,7 @@
               :animation="item.animationData">
               <image
                 :src="item.image_2d"
-                mode="widthFix"
+                mode="aspectFill"
                 class="result-image"
                 :lazy-load="true"></image>
               <view class="result-desc">
@@ -150,7 +150,7 @@
               :animation="item.animationData">
               <image
                 :src="item.image_2d"
-                mode="widthFix"
+                mode="aspectFill"
                 class="result-image"
                 :lazy-load="true"></image>
               <view class="result-desc">
@@ -392,6 +392,10 @@ const loadMore = () => {
 };
 
 const goToDetail = (item) => {
+  if (item.have_make) {
+    //已制作的产品没定要干啥
+    return;
+  }
   store.commit("setTempUuid", item.template_uuid);
   AblumStore.setImageList(store, [
     new AblumType.ImageItem({
@@ -418,19 +422,22 @@ const goToLogin = () => {
   height: 100%;
 }
 .order-area {
+  min-height: calc(100vh - 486rpx);
+  position: relative;
   background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
 }
+
 .default-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
-  padding: 390rpx 0 0;
+
   box-sizing: border-box;
 
   .default-img {
-    width: 392rpx;
-    height: 336rpx;
+    width: 254rpx;
+    height: 200rpx;
   }
   .default-img2 {
     width: 164rpx;
@@ -454,6 +461,14 @@ const goToLogin = () => {
     color: #8537ee;
     line-height: 38rpx;
     text-align: center;
+  }
+  .mtop39 {
+    margin-top: 300rpx;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: white;
   }
 }
 
@@ -626,19 +641,20 @@ const goToLogin = () => {
   .image-list-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 24rpx;
     padding-right: 32rpx;
   }
 
   .image-wrapper {
     position: relative;
     margin-bottom: 2px;
-    width: 332rpx;
-    height: 470rpx;
+    width: 316rpx;
+    padding: 8rpx;
+    //height: 454rpx;
     background: #ffffff;
     border-radius: 32rpx;
     .result-image {
-      width: 316rpx;
+      width: 100%;
       height: 374rpx;
       border-radius: 22rpx;
       background: $image-skeleton-background-pink-font-size-14;
@@ -703,7 +719,7 @@ const goToLogin = () => {
 
     .image-wrapper {
       .result-image {
-        width: 316rpx;
+        width: 100%;
         height: 374rpx;
       }
     }

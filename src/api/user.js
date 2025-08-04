@@ -4,20 +4,20 @@ export const miniProgramAppID = uni.getAccountInfoSync
   : "";
 
 export function getUserInfo(loginParam) {
-	const token = uni.getStorageSync("token");
-	// 如果存在 token，则将其添加到请求头中
-	let header;
-	if (token) {
-	  header = { Authorization:token };
-	} else {
-	  requireLogin();
-	  return Promise.reject(new Error("No token found"));
-	}
-	
+  const token = uni.getStorageSync("token");
+  // 如果存在 token，则将其添加到请求头中
+  let header;
+  if (token) {
+    header = { Authorization: token };
+  } else {
+    requireLogin();
+    return Promise.reject(new Error("No token found"));
+  }
+
   return request({
     url: "/user/info",
     method: "POST",
-	header:header,
+    header: header,
     preventLoading: true,
     loginParam,
   });
@@ -27,7 +27,7 @@ export function getUserInfo(loginParam) {
 export function mnpLogin(data) {
   data.appid = miniProgramAppID;
   return request({
-    url: "/user/wx/token",//api/login/mnpLogin",
+    url: "/user/wx/token", //api/login/mnpLogin",
     method: "POST",
     data,
     loginRequired: false,
@@ -67,26 +67,26 @@ export function getVipCount(filePath) {
   // 如果存在 token，则将其添加到请求头中
   let header;
   if (token) {
-    header = { Authorization:token };
+    header = { Authorization: token };
   } else {
-    requireLogin();
-    return Promise.reject(new Error("No token found"));
+    // requireLogin();
+    // return Promise.reject(new Error("No token found"));
   }
 
   return request({
     url: "/user/generate/number",
     method: "GET",
-    
+    loginRequired: false,
     header: header,
   });
 }
 //获取自己的作品列表
-export function getMyResult(page,category){
-	const token = uni.getStorageSync("token");
-	return request({
-		url:"/production/self",
-		method: "GET",
-		data:{page,size:20,category},
-		header: { Authorization:token },
-	})
+export function getMyResult(page, category) {
+  const token = uni.getStorageSync("token");
+  return request({
+    url: "/production/self",
+    method: "GET",
+    data: { page, size: 20, category },
+    header: { Authorization: token },
+  });
 }

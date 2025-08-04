@@ -2,28 +2,26 @@
   <view class="content">
     <image src="/static/success_icon.png" class="resultIcon"></image>
     <view class="resultTxt">支付成功</view>
-    <view class="name-btn-mid0">查看订单</view>
-    <text class="lineText">返回首页</text>
+    <view class="name-btn-mid0" @tap="$debounceClick(goOrder)()">查看订单</view>
+    <text class="lineText" @tap="$debounceClick(goHome)()">返回首页</text>
     <view class="">
       <image :src="resultImageList[0]?.result_image" class="img"></image>
       <view class="toolBar">
-        <view class="toolBarItemWrap">
+        <view class="toolBarItemWrap1">
           <button class="btnWrap" open-type="share">
-            <image :src="blackShareIcon"></image>
-            <text class="" :style="$getMediumFontWeight()">
+            <!-- <image :src="blackShareIcon"></image> -->
+            <text class="stxt1">
               {{ t("draw-detail.share-btn") }}
             </text>
           </button>
         </view>
         <view
-          class="toolBarItemWrap"
+          class="toolBarItemWrap2"
           @tap="
-            $debounceClick(onSaveImage)([resultImageList[0]?.result_image])
+            $debounceClick(onSavresultImageListeImage)([[0]?.result_image])
           ">
-          <image :src="blackDownloadIcon"></image>
-          <text class="" :style="$getMediumFontWeight()">
-            {{ t("draw-detail.download-btn") }}
-          </text>
+          <!-- <image :src="blackDownloadIcon"></image> -->
+          <text class="stxt2">保存图片</text>
         </view>
       </view>
     </view>
@@ -33,6 +31,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import { useI18n } from "vue-i18n";
 import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
 import { AblumStore, AblumType } from "../../store/album";
 import { blackDownloadIcon, blackShareIcon } from "../../common/svgBase64";
@@ -40,10 +39,30 @@ import { blackDownloadIcon, blackShareIcon } from "../../common/svgBase64";
 const store = useStore();
 const { t } = useI18n();
 const resultImageList = ref([]);
+const hasAlbumWritePermission = ref(true);
+const orderID = ref(null);
 
-onLoad(async () => {
+onLoad(async (param) => {
+  if (param.orderId) {
+    orderID.value = param.orderId;
+  }
+  console.log(param.orderId);
   resultImageList.value = AblumStore.getImageList(store);
 });
+
+const goHome = () => {
+  uni.switchTab({
+    url: "/pages/index/index",
+  });
+};
+const goOrder = () => {
+  console.log("order=", orderID.value);
+  uni.redirectTo({
+    url: orderID.value
+      ? "/pages/order/detail?id=" + orderID.value
+      : "/pages/order/index",
+  });
+};
 
 const onSaveImage = async (url) => {
   const imageUrl = url;
@@ -111,6 +130,7 @@ const requestAuthThenSaveImagesFn = (imagesUrl) => {
 .resultIcon {
   width: 120rpx;
   height: 120rpx;
+  margin-top: 48rpx;
 }
 .resultTxt {
   font-weight: 800;
@@ -145,7 +165,7 @@ const requestAuthThenSaveImagesFn = (imagesUrl) => {
 }
 .toolBar {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
 }
 
 .toolBar image {
@@ -168,11 +188,43 @@ const requestAuthThenSaveImagesFn = (imagesUrl) => {
   background-color: white;
   padding: 0;
 }
+.toolBarItemWrap1 {
+  width: 315rpx;
+  height: 88rpx;
+  background: #000000;
+  border-radius: 1998rpx;
+  border: none;
+
+  .stxt1 {
+    font-weight: 800;
+    font-size: 30rpx;
+    color: #ffffff;
+    line-height: 88rpx;
+    text-align: center;
+  }
+}
+.toolBarItemWrap2 {
+  width: 315rpx;
+  height: 88rpx;
+  border-radius: 46rpx;
+  border: 2rpx solid #000000;
+  .stxt2 {
+    font-weight: 800;
+    font-size: 30rpx;
+    color: #000;
+    line-height: 88rpx;
+    text-align: center;
+  }
+}
 
 .btnWrap {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: transparent;
   padding: 0;
+  border: none;
+  &:after {
+    display: none;
+  }
 }
 </style>

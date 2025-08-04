@@ -31,11 +31,13 @@
       </view>
 
       <view class="center-flex placeBox">
-        <view class="row-flex">
+        <view class="row-flex flex-1">
           <image src="/static/localIcon.png" class="localIcon"></image>
           <view class="">
-            <view class="placeOne">北京市海淀区恒大新宏福苑西区20号楼2单</view>
-            <view class="placeTwo">丢丢 15800000000</view>
+            <view class="placeOne">{{ detail.address_info.address }}</view>
+            <view class="placeTwo">
+              {{ detail.address_info.reveiver }} {{ detail.address_info.phone }}
+            </view>
           </view>
         </view>
         <view class="">
@@ -70,11 +72,13 @@
           <text class="txtBig">{{ detail.price }}</text>
         </view>
         <view class="space-right-20">
-          <view class="button-round-md-main" @tap="$debounceClick(goExpress)()">
+          <view
+            class="button-round-md-main w58"
+            @tap="$debounceClick(goExpress)()">
             查看物流
           </view>
-          <view class="button-round-md">退款</view>
-          <view class="button-round-md" @tap="openKeF">联系客服</view>
+          <view class="button-round-md w58">退款</view>
+          <view class="button-round-md w58" @tap="openKeF">联系客服</view>
         </view>
         <view class="space-b-flex center-flex">
           <view class="label-gray">订单编号</view>
@@ -212,6 +216,12 @@ const closeKeF = () => {
   line-height: 33px;
   //height: 60vh;
   //overflow: auto;
+}
+.w58 {
+  width: 140rpx;
+  height: 58rpx;
+  padding: 0 !important;
+  line-height: 54rpx !important;
 }
 .wuliuState {
   margin-top: 70px;

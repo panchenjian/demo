@@ -12,6 +12,7 @@
         indicator-dots
         :interval="3000"
         :duration="600"
+        :current="selectIndex"
         indicator-active-color="#C465FF"
         indicator-color="rgba(217,217,217,0.300)">
         <swiper-item
@@ -62,7 +63,7 @@
         <text class="err-txt">错误示例{{ index + 1 }}</text>
       </view>
     </view>
-    <view class="name-btn-big marginTop30" @tap="$debounceClick(designImage)()">
+    <view class="name-btn-big marginTop20" @tap="$debounceClick(designImage)()">
       <view>导入照片并开始设计</view>
       <view class="pkg-info" v-if="hadAsk">
         剩余免费次数：
@@ -182,7 +183,6 @@ const designImage = async () => {
 .error-title {
   width: 140rpx;
   height: 42rpx;
-  margin-bottom: 14px;
   margin-left: 32rpx;
 }
 

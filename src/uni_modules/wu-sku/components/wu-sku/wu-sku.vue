@@ -13,25 +13,30 @@
 					<image v-if="!isUseImgSku" class="cover" :src="selectSku.logo || defaultCover" mode=""></image>
 					<view class="right t-w" :class="{useImgSku: isUseImgSku}">
 						<view class="price">
-							<text class="uity" :style="{color: priceRGB||themeRGB}">￥</text>
+							<text class="uity" :style="{color: priceRGB||themeRGB}">价格￥</text>
 							<text class="value" :style="{color: priceRGB||themeRGB}">
 								{{selectSku.id !== undefined ? selectSku.price : `${showAreaPrice[0]}-${showAreaPrice[1]}`}}
 							</text>
 						</view>
-						<text class="stock" v-if="showStockNum">
+						<!--产品先隐藏 <text class="stock" v-if="showStockNum">
 							库存: {{selectSku.id !== undefined ? selectSku.stock : `${showAreaStock[0]}-${showAreaStock[1]}`}}
 						</text>
 						<text class="actSkuStr">
 							{{getSelectedSkuAttrStr}}
-						</text>
+						</text> -->
+						<wu-number-box width="200px" integer v-model="num" :min="selectSku.stock == 0 ? 0 : 1"
+							:max="selectSku.id ? selectSku.stock : showAreaStock[1]"></wu-number-box>
 					</view>
 				</view>
-				<view class="number">
+				<!-- <view class="number">
 					<text class="key">数量</text>
 					<wu-number-box width="200px" integer v-model="num" :min="selectSku.stock == 0 ? 0 : 1"
 						:max="selectSku.id ? selectSku.stock : showAreaStock[1]"></wu-number-box>
-				</view>
+				</view> -->
 				<scroll-view :style="[specsListMaxHeight]" scroll-y="true" class="specsList">
+					<view class="sku-box">
+						
+					
 					<view class="item" v-for="(skuArr, skuArrKey) in r.result" :key="skuArrKey">
 						<text class="title">{{skuArrKey}}</text>
 						<view class="specsValueList">
@@ -62,14 +67,15 @@
 								</view>
 								<!-- 普通sku -->
 								<text v-else class="specs_common" :style="{
-									backgroundColor: sku.active ? themeRGBA : '',
-									color: sku.active ? themeRGB : '#999999',
+									backgroundColor: sku.active ? themeRGBA : '#F3F3F4',
+									color: sku.active ? '#fff' : '#333',
 									textDecoration: sku.discard ? 'line-through' : '',
 								}">
 									{{sku.value}}
 								</text>
 							</view>
 						</view>
+					</view>
 					</view>
 					<slot name="body"></slot>
 				</scroll-view>
@@ -80,6 +86,7 @@
 					}" @click="confirm">
 					<text class="confirm-text">
 						{{btnConfirmShowText}}
+						<text class="mny" v-if="totalMny>0"><text class="t2">￥</text><text class="t1">{{totalMny}}</text></text>
 					</text>
 				</view>
 			</view>
@@ -724,11 +731,12 @@
 			// specs样式
 			specsStyle(sku) {
 				let style = {
-					borderRadius: sku.img ? '15rpx' : '10rpx'
+					borderRadius: sku.img ? '15rpx' : '20rpx'
 				};
 				// 选中的样式
 				if (sku.active) {
-					style.border = `3rpx solid ${this.themeRGB}`;
+					//style.border = `3rpx solid ${this.themeRGB}`;
+					style.background=this.themeRGB;
 				} else if (sku.disabled) { // 禁用的样式
 					style.border = `3rpx solid transparent`;
 					style.background = '#f3f3f3';
@@ -736,13 +744,16 @@
 					style.background = '#fff';
 					style.border = `3rpx solid #e4e4e4`;
 				}
-
+				if(sku.value.length>7){
+					style.width='100%';
+				}
 				if (sku.discard) { // 废弃的样式
 					style = {
 						...style,
 						...this.skuDisabledStyle
 					};
 				}
+				
 
 				return style
 			}
@@ -863,9 +874,9 @@
 		}
 
 		.shopSpecsPopup {
-			background: #FFFFFF;
-			border-radius: 24rpx 24rpx 0 0;
-			padding: 45rpx 30rpx 30rpx;
+			background: #F8F5F9;
+			border-radius: 40rpx 40rpx 0 0;
+			padding: 45rpx 16rpx 30rpx;
 			position: fixed;
 			/* #ifndef APP-NVUE */
 			box-sizing: border-box;
@@ -902,7 +913,7 @@
 
 			.btnBox {
 				background-color: #fff;
-				margin-top: 40rpx;
+				margin-top: 20rpx;
 				/* #ifndef APP-NVUE */
 				border: none;
 				/* #endif */
@@ -924,17 +935,25 @@
 						color: #ffffff;
 						font-size: 32rpx;
 					}
+					.mny{
+						.t1{font-size:42rpx;}
+						.t2{}
+					}
 				}
 			}
 
 			.info {
 				@include flex;
+				background:#fff;
+				border-radius: 32rpx 32rpx 0 0;
+				padding:20rpx;
 
 				.cover {
-					width: 200rpx;
-					height: 200rpx;					
+					width: 134rpx;
+					height: 134rpx;					
 					margin-right: 20rpx;
-					border-radius: 20rpx;
+					//margin-bottom:30rpx;
+					border-radius: 32rpx;
 					/* #ifndef APP-NVUE */
 					background-position: center;
 					background-repeat: no-repeat;
@@ -980,7 +999,7 @@
 						margin-bottom: 20rpx;
 						line-height: 1;
 						@include flex(row);
-						align-items: center;
+						align-items: baseline;
 
 						.uity,
 						.value {
@@ -988,11 +1007,11 @@
 						}
 
 						.uity {
-							font-size: 34rpx;
+							font-size: 24rpx;
 						}
 
 						.value {
-							font-size: 44rpx;
+							font-size: 40rpx;
 						}
 					}
 
@@ -1025,7 +1044,11 @@
 
 			.specsList {
 				margin-bottom: 30rpx;
-
+				.sku-box{
+					background-color: #fff;
+					padding:20rpx;
+					border-radius: 0 0 32rpx 32rpx;
+				}
 				.item {
 					.title {
 						font-size: 32rpx;

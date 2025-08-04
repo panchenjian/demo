@@ -3,27 +3,22 @@
     <view class="main">
       <image
         src="/static/logo.png"
-        style="width: 211rpx; height: 211rpx"
-      ></image>
+        style="width: 211rpx; height: 211rpx"></image>
       <view class="title">{{ $t("draw-bootstrap.title") }}</view>
     </view>
     <button
       class="main-button main-btn"
       :style="$getMediumFontWeight()"
-      @tap="$debounceClick(requestAuthLogin)('weixin')"
-    >
+      @tap="$debounceClick(requestAuthLogin)('weixin')">
       微信授权登录
     </button>
-	<view class="text-button-link" @tap="onGoToIndex">
-		暂不登录
-	</view>
+    <view class="text-button-link" @tap="onGoToIndex">暂不登录</view>
     <view class="user-privacy-wrap">
       <checkbox-group @change="handleCheckboxChange">
         <checkbox
           :value="agreeTerms"
           color="#C465FF"
-          style="transform: scale(0.8)"
-        ></checkbox>
+          style="transform: scale(0.8)"></checkbox>
       </checkbox-group>
       <view class="text-span" :style="$getMediumFontWeight()">
         我已阅读并同意
@@ -80,20 +75,20 @@ export default {
     this.delta = decodeURIComponent(option.delta);
     this.redirectTab = decodeURIComponent(option.redirectTab);
 
-    getPolicy({
-      type: "privacy",
-    }).then((res) => {
-      this.policy.privacy = res?.data;
-    });
+    // getPolicy({
+    //   type: "privacy",
+    // }).then((res) => {
+    //   this.policy.privacy = res?.data;
+    // });
 
-    getPolicy({
-      type: "service",
-    }).then((res) => {
-      this.policy.service = res?.data;
-    });
+    // getPolicy({
+    //   type: "service",
+    // }).then((res) => {
+    //   this.policy.service = res?.data;
+    // });
   },
   methods: {
-	  ...mapMutations(['setBalance_draw']),
+    ...mapMutations(["setBalance_draw"]),
     handleCheckboxChange(e) {
       this.agreeTerms = e.detail.value.length > 0;
     },
@@ -122,9 +117,9 @@ export default {
       uni.showToast({
         title: "登录成功",
       });
-	  getVipCount().then((res) => {
-	    this.setBalance_draw(res.Data?.number || 0);
-	  });
+      getVipCount().then((res) => {
+        this.setBalance_draw(res.Data?.number || 0);
+      });
       if (this.redirectTab) {
         uni.switchTab({
           url: this.redirectTab,
@@ -172,11 +167,11 @@ export default {
         complete: () => {},
       });
     },
-	onGoToIndex(){
-		uni.switchTab({
-		  url: "/pages/index/index",
-		});
-	}
+    onGoToIndex() {
+      uni.switchTab({
+        url: "/pages/index/index",
+      });
+    },
   },
 };
 </script>

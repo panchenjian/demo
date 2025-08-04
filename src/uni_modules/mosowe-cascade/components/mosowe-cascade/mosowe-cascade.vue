@@ -212,6 +212,8 @@ watch(
 // 弹框
 const popupRef = ref(null);
 const show = () => {
+	showNotice.value=true;
+	selectData.value=[];
   popupRef.value!.open();
 };
 const close = () => {

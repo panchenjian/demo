@@ -14,7 +14,7 @@
               :src="group.image_url"
               mode="aspectFill"
               :lazy-load="true"
-              class="template-item-img-home"></image>
+              class="banner-item-img-home"></image>
           </view>
         </swiper-item>
       </swiper>
@@ -40,7 +40,7 @@
                 ? 'tag-selected'
                 : '')
             "
-            @tap="onSelectGroup(group)">
+            @tap="onSelectGroup(group, index)">
             <view
               :class="
                 group.uuid == selectedGroup.uuid ||
@@ -71,6 +71,7 @@
           :show-scrollbar="false"
           @scrolltolower="lower(group)">
           <view
+            v-if="groupList?.length"
             class="template-wrap"
             :class="{ 'template-wrap-padding': actionBarVisible }">
             <view
@@ -78,7 +79,7 @@
               :key="index"
               :class="'template-item-home '"
               @tap="$debounceClick(onSelectTemplate)(template)">
-              <view style="display: flex; flex-direction: column">
+              <view class="column-flex">
                 <view class="fire" v-if="index < 3">
                   <image :src="hotIcon" class="fire-image"></image>
                 </view>
@@ -89,7 +90,7 @@
                   class="template-item-img-home"></image>
                 <view class="template-desc">
                   <view class="name">
-                    <text>{{ template.title }}</text>
+                    <text class="blackTxt24">{{ template.title }}</text>
                     <view class="name-btn">
                       <text>GO</text>
                       <image
@@ -100,6 +101,11 @@
                 </view>
               </view>
             </view>
+          </view>
+          <view class="center-center" style="height: 50%" v-else>
+            <image
+              class="empty-img"
+              src="../../static/order-default-bg.png"></image>
           </view>
         </scroll-view>
       </swiper-item>
@@ -138,9 +144,9 @@ const indicatorDots = ref(true);
 const autoplay = ref(true);
 const interval = ref(2000);
 const duration = ref(500);
-console.log("选择的是", selectedGroup.value);
+//console.log("选择的是", selectedGroup.value);
 const getBanner = () => {
-  console.log("请求banner");
+  //console.log("请求banner");
   getBannerList().then((res) => {
     bannerList.value = res.data.items;
   });
@@ -150,7 +156,12 @@ const getBanner = () => {
   });
 };
 const getListByUuid = async (category_uuid = "", page = 1) => {
-  await store.dispatch("fetchPortrait", { category_uuid, page });
+  let res = await store.dispatch("fetchPortrait", { category_uuid, page });
+  // console.log("接口返回", res, "页码", curPage.value);
+  // if (res) {
+  //   console.log("拼起来", res[curPage.value]);
+  //   //groupList.value = res[curPage.value]?.list || [];
+  // }
 };
 const lower = (group) => {
   getListByUuid(group.uuid, group.curPage + 1);
@@ -158,11 +169,17 @@ const lower = (group) => {
 
 onLoad(async () => {
   getBanner();
-  await store.dispatch("fetchPortrait", { category_uuid: "" });
+  getListByUuid();
   // tempTitle[0].list=store.state.portrait;
   // store.commit('setTempTitleList',tempTitle)
   const defaultSelected = groupList.value?.[0];
   //selectedGroup.value = defaultSelected || [];
+  // setTimeout(() => {
+  //   //模拟到某个页面
+  //   uni.navigateTo({
+  //     url: "/pages/order/result?orderId=2025072823470126156",
+  //   });
+  // }, 1300);
 });
 
 const onClickNextStep = () => {
@@ -179,12 +196,13 @@ const onClickNextStep = () => {
   });
 };
 
-const onSelectGroup = (group) => {
+const onSelectGroup = (group, index) => {
   selectedGroup.value = group;
   // const nextPage = groupList.value.findIndex(
   // 	(item) => item.id == selectedGroup.value?.id
   // );
   // curPage.value = nextPage;
+  curPage.value = index;
   console.log("点击", group);
   store.commit("setTempUuid", group.uuid);
   store.dispatch("fetchPortrait", { category_uuid: group.uuid });
@@ -236,6 +254,7 @@ onShareAppMessage(() => {
 .scroll-view_Y {
   height: 100%;
   background-color: #f6f6f6;
+  position: relative;
 }
 
 .swiperWrap {
@@ -320,12 +339,15 @@ onShareAppMessage(() => {
 }
 
 .template-item-home {
-  width: 332rpx;
+  width: 100%;
   overflow: hidden;
   position: relative;
   background-color: white;
   height: 470rpx;
   border-radius: 32rpx;
+  .column-flex {
+    padding: 8rpx;
+  }
 }
 .fire {
   position: absolute;
@@ -344,8 +366,11 @@ onShareAppMessage(() => {
   width: 100%;
   height: 374rpx;
   border-radius: 22rpx;
-  margin: 8rpx;
   background: $image-skeleton-background-pink-font-size-14;
+}
+.banner-item-img-home {
+  width: 100%;
+  height: 374rpx;
 }
 
 .checked-icon {
@@ -364,18 +389,17 @@ onShareAppMessage(() => {
 }
 
 .template-desc {
-  height: 36rpx;
+  height: 80rpx;
   z-index: 2;
   border-radius: 8px 8px;
   font-size: 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   color: #000;
   // background-color: #f4f4f4;
   gap: 2px;
-  padding: 8px;
 
   .name {
     font-size: 24rpx;

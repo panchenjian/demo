@@ -9,9 +9,10 @@ export function getAppConfig() {
 }
 
 export function getBannerList() {
-	return request({
-	  url: "/system/banner",
-	  method: "GET",
-	  preventLoading: true,
-	});
+  return request({
+    url: "/system/banner",
+    method: "GET",
+    preventLoading: true,
+    loginRequired: false,
+  });
 }

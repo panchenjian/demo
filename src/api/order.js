@@ -51,6 +51,16 @@ export function payAgainOrder(order_no){
 	  header: { Authorization: token },
 	});
 }
+//修改订单地址
+export function updateOrderAddress(order_no,address_uuid){
+	const token = uni.getStorageSync("token");
+	return request({
+	  url: "/order/update/address",
+	  method: "POST",
+	  data:{order_no,address_uuid},
+	  header: { Authorization: token },
+	});
+}
 //关闭订单
 export function cancelOrder(order_no){
 	const token = uni.getStorageSync("token");

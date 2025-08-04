@@ -35,7 +35,7 @@ const state = {
     { order_status: 4, list: [] },
   ],
   addressList: { list: [] },
-  tempAddressUuid:'',//临时作为收货地址
+  tempAddressUuid: "", //临时作为收货地址
 };
 const mutations = {
   // 不要直接调用这个方法，应该调用 DraftStore.setXXX 等方法。保证数据结构的一致性
@@ -81,7 +81,7 @@ const mutations = {
       }
       return x;
     });
-    console.log(state.tempTitleList);
+    //console.log(state.tempTitleList);
   },
   setSwap(state, data) {
     state.swap = data;
@@ -99,22 +99,23 @@ const mutations = {
     state.orderList = data;
   },
   setOrderListByUuid(state, data) {
+    //debugger;console.log('----',data);
     state.orderList.forEach((x) => {
       if (x.order_status === data.id) {
         if (!x.list) {
           x.list = [];
         }
-		if (data.page === 1) {
-		  x.list = data.data;
-		  x.curPage = 1;
-		} else {
-			x.list = x.list.concat(data.data);
-			if (!x.curPage) {
-			  x.curPage = 1;
-			} else {
-			  x.curPage++;
-			}
-		}
+        if (data.page === 1) {
+          x.list = data.data;
+          x.curPage = 1;
+        } else {
+          x.list = x.list.concat(data.data);
+          if (!x.curPage) {
+            x.curPage = 1;
+          } else {
+            x.curPage++;
+          }
+        }
       }
       return x;
     });
@@ -150,11 +151,10 @@ const createFetchAction = (commit, state, getter, fetchFunction) => {
   let fetchPromise;
   if ("portrait" === getter) {
     let t = getter && state["tempTitleList"];
-    let one = t.find((x) => x.uuid === state.tempUuid);
+    //let one = t.find((x) => x.uuid === state.tempUuid);
 
-    fetchPromise = one?.curPage
-      ? Promise.resolve(state["tempTitleList"])
-      : null;
+    //fetchPromise = one?.curPage ? Promise.resolve(t) : null;
+    fetchPromise = null; //t[0]?.list.length ? Promise.resolve(t) : null;
   } else {
     fetchPromise =
       getter && state[getter] && state[getter].length > 0
@@ -177,7 +177,7 @@ const createFetchAction = (commit, state, getter, fetchFunction) => {
 
 const actions = {
   fetchPortrait({ commit }, { category_uuid, page }) {
-    console.log("点击uuid", category_uuid);
+    //console.log("点击uuid", category_uuid);
     return createFetchAction(
       commit,
       this.state,
@@ -186,7 +186,7 @@ const actions = {
         getGroupList({
           page: page || 1,
           size: 20,
-          category_uuid: category_uuid || this.state.tempUuid,
+          category_uuid: category_uuid,
         }).then((res) => {
           if (res.code === 20000) {
             return {
@@ -249,7 +249,7 @@ const actions = {
 
     return getOrderList({ id, page, order_status }).then((res) => {
       if (res.code === 20000) {
-        commit("setOrderListByUuid", { id,page, data: res.data?.items });
+        commit("setOrderListByUuid", { id, page, data: res.data?.items });
       }
       return null;
     });

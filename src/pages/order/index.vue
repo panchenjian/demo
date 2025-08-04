@@ -7,7 +7,7 @@
       @change="changeTab"
       lineColor="#B37DF5"
       activeColor="#B37DF5"
-	  width="14%"
+      width="14%"
       height="100rpx"
       lineHeight="2px"
       lineScale="0.7"></v-tabs>
@@ -53,14 +53,39 @@
                   <view>× {{ template.number }}</view>
                 </view>
               </view>
-              <view class="space-b-flex">
+              <view
+                class="order-wuliu-status"
+                v-if="[2, 3].includes(template.order_status)">
+                <image
+                  :src="
+                    template.order_status === 2
+                      ? '/static/hourglass.png'
+                      : '/static/from.png'
+                  "
+                  class="staImg"></image>
+                <text class="txt3">
+                  {{
+                    template.order_status === 2 ? "手办制作中" : "手办已发货"
+                  }}
+                </text>
+              </view>
+              <view
+                :class="`height58 space-b-flex ${
+                  [2, 3].includes(template.order_status)
+                    ? 'marginTop24'
+                    : 'marginTop48'
+                }`">
                 <view class="pay-info">
                   <text>
-                    {{
-                      template.order_status === 1 || template.order_status === 5
-                        ? "待"
-                        : "实"
-                    }}付款
+                    <text class="txtBig">
+                      {{
+                        template.order_status === 1
+                          ? "待付款"
+                          : template.order_status === 5
+                          ? "总金额"
+                          : "实付款"
+                      }}
+                    </text>
                     <text>
                       ￥
                       <text class="txtBig">{{ template.price }}</text>
@@ -70,18 +95,50 @@
                 <view class="template-desc">
                   <view class="text-right" v-if="template.order_status === 1">
                     <button
-                      class="mini-btn"
+                      class="mini-btn orderBtn-default"
                       type="default"
                       size="mini"
                       @tap.stop="$debounceClick(cancel)(template)">
                       取消订单
                     </button>
                     <button
-                      class="mini-btn orderBtn marginLeft12"
+                      class="mini-btn orderBtn-parimy marginLeft12"
                       type="default"
                       @tap.stop="$debounceClick(payIt)(template)"
                       size="mini">
                       立即付款
+                    </button>
+                  </view>
+                  <view class="text-right" v-if="template.order_status === 2">
+                    <button
+                      class="mini-btn orderBtn-default"
+                      type="default"
+                      size="mini"
+                      @tap.stop="$debounceClick(quickPost)(template)">
+                      催发货
+                    </button>
+                    <button
+                      class="mini-btn orderBtn-parimy marginLeft12"
+                      type="default"
+                      @tap.stop="$debounceClick(goChangeAddress)(template)"
+                      size="mini">
+                      修改地址
+                    </button>
+                  </view>
+                  <view class="text-right" v-if="template.order_status === 3">
+                    <button
+                      class="mini-btn orderBtn-default"
+                      type="default"
+                      size="mini"
+                      @tap.stop="$debounceClick(goProcess)(template)">
+                      查看进度
+                    </button>
+                    <button
+                      class="mini-btn orderBtn-parimy marginLeft12"
+                      type="default"
+                      @tap.stop="$debounceClick(goExpress)(template)"
+                      size="mini">
+                      查看物流
                     </button>
                   </view>
                 </view>
@@ -92,6 +149,21 @@
       </swiper-item>
     </swiper>
   </view>
+  <uni-popup
+    ref="kefuPopup"
+    type="bottom"
+    background-color="#fff"
+    border-radius="10px 10px 0 0">
+    <view class="popup-content">
+      <view class="txtBig">
+        微信扫描二维码添加客服咨询
+        <icon type="clear" class="closeIcon" @tap="closeKeF"></icon>
+      </view>
+      <image
+        src="https://img2.baidu.com/it/u=3165004975,3909462601&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=501"
+        mode=""></image>
+    </view>
+  </uni-popup>
 </template>
 
 <script setup>
@@ -115,6 +187,7 @@ const tabs = ref([
   { id: 3, name: "已发货", disabled: true },
   { id: 4, name: "已完成", disabled: false },
 ]);
+const kefuPopup = ref();
 const changeTab = (index) => {};
 
 const orderList = computed(
@@ -146,7 +219,7 @@ const getBanner = (id = "", page = 1, order_status = "") => {
     //   },
     // ]; //res.data.items
     let tmp = res.data.items;
-    store.commit("setOrderListByUuid", { id: id, data: tmp });
+    store.commit("setOrderListByUuid", { id: id, page, data: tmp });
   });
 };
 const getListByUuid = async (id = "", page = 1, order_status = "") => {
@@ -183,7 +256,7 @@ const showLoadingOverlay = async (orderID) => {
       if (res.data.order_status === 2) {
         clearInterval(intervalId.value);
         uni.hideLoading();
-        !pollingFinished.value && onPaySuccess();
+        !pollingFinished.value && onPaySuccess(orderID);
         pollingFinished.value = true;
       }
     } catch (error) {
@@ -198,10 +271,10 @@ const showLoadingOverlay = async (orderID) => {
   }, 1800);
 };
 
-const onPaySuccess = async () => {
+const onPaySuccess = async (orderID) => {
   await store.dispatch("fetchUserInfo");
   uni.navigateTo({
-    url: "/pages/order/result",
+    url: "/pages/order/result?orderId=" + orderID,
   });
   // uni.showToast({
   //   title: "支付成功！",
@@ -289,6 +362,27 @@ const cancel = (item) => {
     getBanner();
   });
 };
+//查看物流
+const goExpress = (item) => {
+  uni.navigateTo({
+    url: "/pages/order/express?orderId=" + item.order_no,
+  });
+};
+const goProcess = (item) => {};
+const quickPost = (item) => {
+  openKeF();
+};
+const goChangeAddress = (item) => {
+  uni.navigateTo({
+    url: "/pages/address/index?orderId=" + item.order_no,
+  });
+};
+const openKeF = () => {
+  kefuPopup.value.open("bottom");
+};
+const closeKeF = () => {
+  kefuPopup.value.close();
+};
 </script>
 
 <style lang="scss" scoped>
@@ -304,6 +398,63 @@ const cancel = (item) => {
 .swiperWrap {
   background: #f9f8fa;
   height: 100%;
-  padding: 32rpx;
+  padding: 0 30rpx;
+}
+.height58 {
+  height: 58rpx;
+}
+.scroll-view_Y {
+  height: calc(100vh - 114rpx);
+}
+
+.scroll-view_Y::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.scroll-view_Y::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  /* 设置滚动条颜色为透明 */
+}
+.order-wuliu-status {
+  height: 68rpx;
+  background: #f9f8fa;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  margin-top: 28rpx;
+  .staImg {
+    width: 40rpx;
+    height: 40rpx;
+    margin: 14rpx 20rpx;
+  }
+  .txt3 {
+    font-size: 24rpx;
+    color: #000000;
+  }
+}
+.orderBtn-default {
+  width: 140rpx;
+  height: 58rpx;
+  border-radius: 28rpx;
+  border: 1rpx solid #999999;
+  padding: 0;
+
+  font-size: 24rpx;
+  color: #333333;
+  line-height: 54rpx;
+  text-align: center;
+}
+.orderBtn-parimy {
+  width: 140rpx;
+  height: 58rpx;
+  border-radius: 28rpx;
+  border: 1rpx solid #8537ee;
+  padding: 0;
+
+  font-size: 24rpx;
+  color: #8537ee;
+  line-height: 54rpx;
+  text-align: center;
 }
 </style>
