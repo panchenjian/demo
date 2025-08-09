@@ -457,4 +457,7 @@ const closeKeF = () => {
   line-height: 54rpx;
   text-align: center;
 }
+.txtBig {
+  font-size: 32rpx;
+}
 </style>

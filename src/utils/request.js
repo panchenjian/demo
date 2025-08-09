@@ -75,6 +75,7 @@ export default function request(options) {
           ? defaultLoadingTitle
           : options.loadingToastTips,
       success: (res) => {
+        //debugger;
         if (res.data.code === 40001 && options.loginRequired) {
           // 如果返回状态码为 -1，则提示用户重新登录
           requireLogin({
@@ -103,6 +104,7 @@ export function requireLogin(
 ) {
   //return;//暂时不跳转登录页
   const routerFN = redirect || delta ? uni.navigateTo : uni.reLaunch;
+  //debugger;
   if (disabledToast) {
     routerFN({
       url:

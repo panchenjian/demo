@@ -9,12 +9,12 @@
   </view>
   <view class="content">
     <image
-      src="https://mydolldoll-test.oss-cn-shanghai.aliyuncs.com/37b8f55f-4c41-4611-a406-87493e59024a"
+      src="https://mydolldoll-test.oss-cn-shanghai.aliyuncs.com/2606f2c2-ff7b-47a7-9fc3-5e3566acfa03"
       class="bg"></image>
 
     <view class="wuliuState">
       <image src="/static/wuliu.png" class="wuliuIcon"></image>
-      <text class="text">待收货</text>
+      <text class="text">{{ orderStateCN[detail.order_status] }}</text>
     </view>
     <view class="default-cardBox padding32" @tap="$debounceClick(goExpress)()">
       <view class="placeBox">
@@ -80,23 +80,25 @@
           <view class="button-round-md w58">退款</view>
           <view class="button-round-md w58" @tap="openKeF">联系客服</view>
         </view>
-        <view class="space-b-flex center-flex">
-          <view class="label-gray">订单编号</view>
-          <view class="label-value">
-            {{ detail.order_no?.slice(0, 19) }}
-          </view>
+      </view>
+      <view class="space-b-flex center-flex marginTop32">
+        <view class="label-gray">订单编号</view>
+        <view class="label-value">
+          {{ detail.order_no?.slice(0, 19) }}
         </view>
-        <view class="space-b-flex center-flex">
-          <view class="label-gray">创建时间</view>
-          <view class="label-value">
-            {{ timeFormat(detail.create_at, "yyyy-mm-dd hh:MM:ss") }}
-          </view>
+      </view>
+      <view class="space-b-flex center-flex">
+        <view class="label-gray">创建时间</view>
+        <view class="label-value">
+          {{ timeFormat(detail.create_at, "yyyy-mm-dd hh:MM:ss") }}
         </view>
-        <view class="space-b-flex center-flex">
-          <view class="label-gray">发货时间</view>
-          <view class="label-value">
-            {{ timeFormat(detail.send_at, "yyyy-mm-dd hh:MM:ss") }}
-          </view>
+      </view>
+      <view
+        class="space-b-flex center-flex"
+        v-if="![1, 5].includes(detail.order_status)">
+        <view class="label-gray">发货时间</view>
+        <view class="label-value">
+          {{ timeFormat(detail.send_at, "yyyy-mm-dd hh:MM:ss") }}
         </view>
       </view>
     </view>
@@ -165,6 +167,7 @@ const stepActive = ref(1),
       title: "用户验收",
     },
   ]);
+const orderStateCN = ["", "待支付", "制作中", "已发货", "已完成", "已取消"];
 const detail = ref({});
 const kefuPopup = ref();
 let orderId;
@@ -198,11 +201,11 @@ const closeKeF = () => {
 <style lang="scss" scoped>
 @import "@/common/main.scss";
 .content {
-  height: calc(100vh - 60px);
+  height: 100vh; //calc(100vh - 60px);
   overflow: auto;
   position: relative;
-  background: #f9f8fa;
-  //background: linear-gradient(180deg, #f6ebfe 0%, #f7f7f7 100%);
+  //background: #f9f8fa;
+  background: linear-gradient(180deg, #fff 10%, #f6f6f6 100%);
 }
 .bg {
   width: 100%;
@@ -303,7 +306,10 @@ const closeKeF = () => {
   display: flex;
   gap: 20rpx;
   flex-direction: row-reverse;
-  margin: 32rpx 0;
+  margin-top: 32rpx;
+}
+.marginTop32 {
+  margin-top: 32rpx;
 }
 .button-round-md {
   display: inline-block;

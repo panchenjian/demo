@@ -56,6 +56,7 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-4070520250711001",
     "@dcloudio/uni-ui": "^1.5.7",
     "@tuniao/tn-icon": "^1.4.0",
+    "big.js": "^7.0.1",
     "crypto-js": "^4.2.0",
     "install": "^0.13.0",
     "npm": "^9.8.1",

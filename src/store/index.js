@@ -167,7 +167,8 @@ const createFetchAction = (commit, state, getter, fetchFunction) => {
   }
 
   return fetchFunction().then(({ mutationName, data, uuid }) => {
-    commit(mutationName, data);
+    console.log("muat=", mutationName);
+    mutationName && commit(mutationName, data);
     // if(uuid){
     commit("setTempTitleListByUuid", { uuid, data: data });
     // }

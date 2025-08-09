@@ -120,6 +120,7 @@ export default {
       getVipCount().then((res) => {
         this.setBalance_draw(res.Data?.number || 0);
       });
+      //debugger;
       if (this.redirectTab) {
         uni.switchTab({
           url: this.redirectTab,

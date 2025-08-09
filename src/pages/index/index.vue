@@ -239,7 +239,6 @@ onShareAppMessage(() => {
 @import "@/common/main.scss";
 
 .content {
-  padding: 14px 0;
   height: 100%;
   overflow: hidden;
   position: relative;
@@ -253,8 +252,17 @@ onShareAppMessage(() => {
 
 .scroll-view_Y {
   height: 100%;
-  background-color: #f6f6f6;
+  background: #f6f6f6;
   position: relative;
+}
+.scroll-view_Y:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
 }
 
 .swiperWrap {
@@ -278,7 +286,7 @@ onShareAppMessage(() => {
   border-radius: 36rpx;
   background-color: white;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .template-wrap {
@@ -290,6 +298,8 @@ onShareAppMessage(() => {
   margin-right: 32rpx;
   margin-left: 32rpx;
   padding-bottom: 90rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .template-wrap-padding {

@@ -26,7 +26,7 @@
             </view>
             <view class="card-price">
               ￥
-              <text class="txtBig">{{ item.price }}</text>
+              <text class="txtBigBig">{{ item.price }}</text>
             </view>
             <view class="card-av">{{ item.av }}/次</view>
           </view>
@@ -210,7 +210,12 @@ onLoad((option) => {
   overflow: auto;
   background: linear-gradient(180deg, #f6ebfe 0%, #f7f7f7 100%);
 }
-
+.txtBigBig{
+	font-weight: 500;
+	font-size: 44rpx;
+	
+	line-height: 30rpx;
+}
 .tab-body {
   background: #f7f7f7;
   border-radius: 60rpx 60rpx 0 0;

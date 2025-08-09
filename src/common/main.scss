@@ -63,7 +63,7 @@
   flex-direction: column;
   font-size: 30rpx;
   padding: 5px 18px;
-  margin: 16pt;
+  margin: 16pt auto;
   text-align: center;
 }
 .text-button-link {
@@ -256,7 +256,7 @@
 }
 .txtBig {
   font-weight: 500;
-  font-size: 44rpx;
+  font-size: 32rpx;
 
   line-height: 30rpx;
 }
@@ -311,8 +311,7 @@
   line-height: 30rpx;
 }
 .pay-info {
-  font-size: 14px;
-  line-height: 38px;
+  line-height: 58rpx;
 }
 //订单---end---
 //自定义导航头---start----

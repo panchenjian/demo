@@ -191,6 +191,7 @@ import ShowQrCode from "../../components/ShowQrCode.vue";
 import CardCodeInput from "../../components/CardCodeInput.vue";
 import { isIOS } from "../../main";
 import { hotIcon, tabBg } from "../../common/svgBase64";
+import { getVipCount } from "../../api/user";
 //import VTabs from "@/uni_modules/v-tabs/components/v-tabs/v-tabs";
 
 const store = useStore();
@@ -301,10 +302,37 @@ onLoad((option) => {
 });
 
 onShow(() => {
-  console.log("onShow");
+  //console.log("onShow");
   if (!orderList.value.length) {
     initList();
     fetchGalleryList(true, true);
+    // 获取用户信息
+    /*uni.getUserInfo({
+      provider: "weixin",
+      success: function (infoRes) {
+        console.log(infoRes);
+        console.log("用户昵称为：" + infoRes.userInfo.nickName);
+      },
+      fail: function (err) {
+        console.log("获取微信头像失败，没给鉴权");
+      },
+    });旧方式*/
+    /*uni.getUserProfile({
+      desc: "用于显示头像及昵称",
+      lang: "zh_CN",
+      success: function (infoRes) {
+        console.log("新接口", infoRes);
+        //console.log("用户昵称为：" + infoRes.userInfo.nickName);
+      },
+      fail: function (err) {
+        console.log("获取微信头像失败，没给鉴权");
+      },
+    });2.0方式*/
+
+    getVipCount().then((res) => {
+      //balanceDraw.value = res.Data?.number || 0;
+      store.commit("setBalance_draw", res.Data?.number || 0);
+    });
   }
 });
 
@@ -329,7 +357,11 @@ const onRefresh = () => {
   isRefresherTriggered.value = true;
   if (isRefreshing.value) return;
   isRefreshing.value = true;
-
+  //产品不要下拉刷新
+  // setTimeout(() => {
+  //   isRefresherTriggered.value = false;
+  //   isRefreshing.value = false;
+  // }, 300);
   initList();
   fetchGalleryList(false, true).finally(() => {
     isRefresherTriggered.value = false;
@@ -463,7 +495,7 @@ const goToLogin = () => {
     text-align: center;
   }
   .mtop39 {
-    margin-top: 300rpx;
+    margin-top: 120rpx;
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -886,6 +918,7 @@ const goToLogin = () => {
 .name-btn-mid0 {
   width: 315rpx;
   height: 88rpx;
+  line-height: 84rpx;
   background: linear-gradient(90deg, #b9aafc 0%, #8537ee 100%);
   border-radius: 1998rpx 1998rpx 1998rpx 1998rpx;
 }

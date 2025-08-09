@@ -61,7 +61,7 @@ export function uploadCommonImage(filePath) {
     header: header,
   });
 }
-export function getVipCount(filePath) {
+export function getVipCount() {
   const token = uni.getStorageSync("token");
 
   // 如果存在 token，则将其添加到请求头中
