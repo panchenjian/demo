@@ -14,14 +14,26 @@
           </view>
         </view>
         <view class="processBox">
-          <l-liquid
-            v-model:current="modelVale"
-            :percent="target"
-            waveColor="#B37DF5"
-            innerColor="#DDD3FC">
-            <text>{{ modelVale }}%</text>
-          </l-liquid>
-          <view class="text-center">手办设计中，请耐心等待</view>
+          <view class="" v-if="failBuild">
+            <image src="/static/build-fail.png" class="failBuildImg"></image>
+          </view>
+          <view class="" v-else>
+            <l-liquid
+              v-model:current="modelVale"
+              :percent="target"
+              waveColor="#B37DF5"
+              innerColor="#DDD3FC">
+              <text>{{ modelVale }}%</text>
+            </l-liquid>
+          </view>
+
+          <view class="text-center" :class="failBuild ? 'redTxt' : ''">
+            {{
+              failBuild
+                ? "设计失败，请重新选择图片设计"
+                : "手办设计中，请耐心等待"
+            }}
+          </view>
         </view>
         <image src="/static/stepTitle.png" class="step-title"></image>
         <view class="step-box">
@@ -151,23 +163,36 @@
                   <icon type="clear" class="closeIcon" @tap="closeExp"></icon>
                 </view>
                 <view class="blod">产品规格</view>
-                <text class="text">
-                  ●材质：环保树脂 ●尺寸：以下单页所选尺寸规格为准
+                <text class="">
+                  <text class="text">材质：环保树脂</text>
+                  <text class="text">尺寸：以下单页所选尺寸规格为准</text>
                 </text>
                 <view class="blod">定制流程</view>
                 <view class="">
-                  ●用户设计：用户上传个人图片，选择喜欢的设计风格，生成满意的效果图
-                  ●深化设计：下单后，设计师基于用户效果图进行3D建模及设计深化，输出3D白模
-                  ●手办制作：工厂根据设计师深化设计后的模型，进行手办制作生产，得到最终手办成品
+                  <text class="text">
+                    用户设计：用户上传个人图片，选择喜欢的设计风格，生成满意的效果图
+                  </text>
+                  <text class="text">
+                    深化设计：下单后，设计师基于用户效果图进行3D建模及设计深化，输出3D白模
+                  </text>
+                  <text class="text">
+                    手办制作：工厂根据设计师深化设计后的模型，进行手办制作生产，得到最终手办成品
+                  </text>
                 </view>
                 <view class="blod">注意事项</view>
                 <view class="">
-                  ●用户设计生成效果图仅为展示效果，实物请以手办制作流程中实物图为准
-                  ●本产品为定制类产品，一旦进入手办制作环节，非工艺缺陷、质量类问题，售出不可退换
-                  ●因工艺特性因素，成品可能存在轻微像素噪点
+                  <text class="text">
+                    用户设计生成效果图仅为展示效果，实物请以手办制作流程中实物图为准
+                  </text>
+                  <text class="text">
+                    本产品为定制类产品，一旦进入手办制作环节，非工艺缺陷、质量类问题，售出不可退换
+                  </text>
+                  <text class="text">
+                    因工艺特性因素，成品可能存在轻微像素噪点
+                  </text>
                 </view>
                 <view class="blod">声明条款</view>
-                <view class="">●实物颜色与屏幕存在合理色差</view>
+                <view class="text">实物颜色与屏幕存在合理色差</view>
               </view>
             </uni-popup>
             <wu-sku
@@ -215,7 +240,7 @@
                       <text class="txtBig">{{ selectSku.price * buyNum }}</text>
                     </text>
                   </view>
-                  <view class="default-label-txt space-b-flex">
+                  <view class="default-label-txt space-b-flex" v-if="cal_price">
                     <text>运费</text>
                     <text>
                       ￥
@@ -249,7 +274,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import Big from "big.js";
@@ -259,7 +284,7 @@ import { defaultLoadingTitle } from "../../common/variable.js";
 import { osName } from "../../context.js";
 import { AblumStore, AblumType } from "../../store/album";
 import { DraftStore } from "../../store/draft";
-import { onLoad, onUnload, onShareAppMessage } from "@dcloudio/uni-app";
+import { onLoad, onShow, onUnload, onShareAppMessage } from "@dcloudio/uni-app";
 import { createProcess, getSku } from "../../api/faceSwap.js";
 import { submitProdOrder, getExpressPrice } from "../../api/order.js";
 import { queryPayStatus, requestPrepay } from "../../api/pay";
@@ -320,6 +345,7 @@ const isDefaultAddress = computed(() => {
       };
 });
 
+const failBuild = ref(false);
 const pollingFinished = ref(false);
 const production_uuid = ref("");
 const photoAlbumType = ref("");
@@ -346,6 +372,10 @@ const fakeProcess = () => {
 const getProcess = (uuid) => {
   createProcess(uuid).then((res) => {
     if (res.code === 0) {
+      if (res.data.status === 4) {
+        failBuild.value = true;
+        return;
+      }
       if (res.data.process < 100) {
         target.value = res.data.process;
         stepActive.value = res.data.status - 1;
@@ -377,6 +407,15 @@ onLoad((option) => {
   currentPage.value = AblumStore.getPreviewImageIndex(store) || 0;
 
   getDefaultAddress();
+});
+// onShow(() => {
+//   setCalPrice();
+// });
+watch(isDefaultAddress, (newValue, oldValue) => {
+  //console.log("doubleCount changed ", oldValue, newValue);
+  if (oldValue.uuid !== newValue.uuid) {
+    setCalPrice();
+  }
 });
 onUnload(() => {
   leavePage = true;
@@ -512,7 +551,7 @@ const show = ref(false);
 const change = (e) => {
   show.value = e.show;
 };
-let cal_price = ref(8);
+let cal_price = ref(0); //运费
 let skuShow = ref(false);
 let selectSku = ref({ price: 0 });
 let buyNum = ref(1);
@@ -525,6 +564,14 @@ const comPrice = computed(() => {
       )
     : 0;
 });
+const setCalPrice = () => {
+  const default_address = isDefaultAddress.value; //baseAddress.value.find((x) => x.is_default);
+  if (default_address.uuid) {
+    getExpressPrice(default_address.uuid).then((res) => {
+      cal_price.value = new Big(res?.data?.price).div(100) || 8;
+    });
+  }
+};
 // sku列表
 let skus = ref([
   // {
@@ -576,12 +623,7 @@ let skuChange = (sku) => {
   console.log(sku);
   selectSku.value = sku;
 
-  const default_address = isDefaultAddress.value; //baseAddress.value.find((x) => x.is_default);
-  if (default_address.uuid) {
-    getExpressPrice(default_address.uuid).then((res) => {
-      cal_price.value = new Big(res?.data?.price).div(100) || 8;
-    });
-  }
+  setCalPrice();
 };
 // sku确认事件
 let skuConfirm = (e) => {
@@ -636,7 +678,7 @@ const onPaySuccess = async (orderID) => {
   setTimeout(() => {
     //uni.navigateBack();
     uni.navigateTo({
-      url: "/pages/order/result?orderId="+orderID,
+      url: "/pages/order/result?orderId=" + orderID,
     });
   }, 2000);
 };
@@ -736,6 +778,13 @@ const submitOrder = async (e) => {
   box-sizing: border-box;
   min-height: 600px;
 }
+.redTxt {
+  color: #f22828 !important;
+}
+.failBuildImg {
+  width: 140px;
+  height: 128px;
+}
 .nickname-wrap {
   display: flex;
   gap: 16px;
@@ -748,6 +797,16 @@ const submitOrder = async (e) => {
 }
 .text-center {
   text-align: center;
+}
+.text {
+  display: block;
+  padding-left: 18px;
+  position: relative;
+  &::before {
+    content: "●";
+    position: absolute;
+    left: 0;
+  }
 }
 .high40 {
   height: 40rpx;

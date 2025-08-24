@@ -120,7 +120,11 @@
               @tap="$debounceClick(goToDetail)(item)"
               :animation="item.animationData">
               <image
-                :src="item.image_2d"
+                :src="
+                  item.status_2d === 4
+                    ? '/static/build-fail.png'
+                    : item.image_2d
+                "
                 mode="aspectFill"
                 class="result-image"
                 :lazy-load="true"></image>
@@ -149,7 +153,11 @@
               @tap="$debounceClick(goToDetail)(item)"
               :animation="item.animationData">
               <image
-                :src="item.image_2d"
+                :src="
+                  item.status_2d === 4
+                    ? '/static/build-fail.png'
+                    : item.image_2d
+                "
                 mode="aspectFill"
                 class="result-image"
                 :lazy-load="true"></image>
@@ -220,7 +228,6 @@ const rightList = computed(() => {
 
 //store.dispatch("fetchAppConfig");
 
-store.dispatch("fetchUserInfo");
 const userInfo = computed(() => store.state.userInfo);
 
 const cardCodeInputPopupRef = ref(null);
@@ -302,8 +309,9 @@ onLoad((option) => {
 });
 
 onShow(() => {
-  //console.log("onShow");
+  console.log("user-index-onShow", orderList.value.length);
   if (!orderList.value.length) {
+    store.dispatch("fetchUserInfo");
     initList();
     fetchGalleryList(true, true);
     // 获取用户信息
@@ -317,7 +325,8 @@ onShow(() => {
         console.log("获取微信头像失败，没给鉴权");
       },
     });旧方式*/
-    /*uni.getUserProfile({
+    /*2.0方式*/
+    uni.getUserProfile({
       desc: "用于显示头像及昵称",
       lang: "zh_CN",
       success: function (infoRes) {
@@ -327,7 +336,7 @@ onShow(() => {
       fail: function (err) {
         console.log("获取微信头像失败，没给鉴权");
       },
-    });2.0方式*/
+    });
 
     getVipCount().then((res) => {
       //balanceDraw.value = res.Data?.number || 0;
@@ -425,7 +434,10 @@ const loadMore = () => {
 
 const goToDetail = (item) => {
   if (item.have_make) {
-    //已制作的产品没定要干啥
+    //已制作的产品跳订单详情
+    uni.navigateTo({
+      url: "/pages/order/detail?id=" + item.order_num,
+    });
     return;
   }
   store.commit("setTempUuid", item.template_uuid);

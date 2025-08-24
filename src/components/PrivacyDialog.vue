@@ -4,7 +4,10 @@
     <view class="dialog-overlay"></view>
     <view class="dialog-content">
       <!-- 对话框内容 -->
-      <view class="dialog-header">{{ title }}</view>
+      <view class="dialog-header">
+        {{ title }}
+        <text @tap="test" class="rightSmallTxt">{{ other }}</text>
+      </view>
       <view class="content">
         <slot></slot>
       </view>
@@ -20,7 +23,7 @@ export default {
       visible: false,
     };
   },
-  props: ["title"],
+  props: ["title", "other", "otherTap"],
   methods: {
     open() {
       this.visible = true;
@@ -28,11 +31,20 @@ export default {
     close() {
       this.visible = false;
     },
+    test() {
+      //debugger;
+      this.otherTap();
+    },
   },
 };
 </script>
 
 <style scoped lang="scss">
+.rightSmallTxt {
+  color: #c465ff;
+  font-size: 12px;
+  float: right;
+}
 .dialog {
   position: fixed;
   top: 0;

@@ -29,9 +29,9 @@
   "api-toast.upload-fail": "上传失败请重试",
   "api-toast.upload-success": "上传成功",
   "api-toast.upload-ing": "上传中",
-  "api-share.moment-title.default": "我正在使用LunaAI写真，你也来试试吧",
+  "api-share.moment-title.default": "我正在使用MyDollDoll，你也来试试吧",
 
-  "draw-index.navigation-bar-title-text": "Luna Swapping AI换脸",
+  "draw-index.navigation-bar-title-text": "MyDollDoll AI换脸",
   "draw-bootstrap.title": "麦哆哆",
   "draw-gallary.tip": "所有用到的电影剧照只是相似风格哦",
   "draw-gallary-detail.main-btn": "选定影集",

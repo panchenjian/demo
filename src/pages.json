@@ -69,7 +69,8 @@
     {
       "path": "pages/order/result",
       "style": {
-        "navigationBarTitleText": "支付结果"
+        "navigationStyle": "custom"
+        //"navigationBarTitleText": "支付结果"
       }
     },
     {

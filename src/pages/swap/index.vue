@@ -16,7 +16,7 @@
         indicator-active-color="#C465FF"
         indicator-color="rgba(217,217,217,0.300)">
         <swiper-item
-          v-for="(template, index) in groupList.slice(0, 4)"
+          v-for="(template, index) in groupList"
           :key="index"
           class="swiperItem">
           <image
@@ -32,27 +32,49 @@
     </view>
     <view class="image-group-wrapper">
       <text class="group-title">— 请选择喜欢的手办风格 —</text>
-      <view class="image-list-wrapper">
-        <view v-for="(group, index) in groupList.slice(0, 4)" :key="group.uuid">
-          <view class="top-wrapper" @tap="handleMoreClick(group, index)">
-            <view class="image-wrapper">
-              <image
-                :src="group.cover"
-                mode="aspectFill"
-                :class="selectIndex === index ? 'selected' : ''"
-                @tap="handleMoreClick(group, index)"
-                :lazy-load="true"></image>
+      <swiper
+        class="swiperWrap"
+        :current="curPage"
+        height="100%"
+        :autoplay="false"
+        next-margin="0"
+        @change="handleSwiperChange">
+        <swiper-item
+          v-for="(groupF, indexF) in Math.ceil(groupList.length / 4)"
+          :key="indexF">
+          <view class="image-list-wrapper">
+            <view
+              v-for="(group, index) in groupList.slice(
+                indexF * 4,
+                4 + indexF * 4
+              )"
+              :key="group.uuid">
+              <view
+                class="top-wrapper"
+                @tap="handleMoreClick(group, index, indexF)">
+                <view class="image-wrapper">
+                  <image
+                    :src="group.cover"
+                    mode="aspectFill"
+                    :class="
+                      groupList[selectIndex].uuid === group.uuid
+                        ? 'selected'
+                        : ''
+                    "
+                    :lazy-load="true"></image>
+                </view>
+                <text>
+                  {{
+                    group.title.length > 8
+                      ? group.title.slice(0, 16) + "..."
+                      : group.title
+                  }}
+                </text>
+              </view>
             </view>
-            <text>
-              {{
-                group.title.length > 8
-                  ? group.title.slice(0, 16) + "..."
-                  : group.title
-              }}
-            </text>
           </view>
-        </view>
-      </view>
+        </swiper-item>
+      </swiper>
     </view>
     <view class="">
       <image src="/static/errorDemo.png" class="error-title"></image>
@@ -63,7 +85,7 @@
         <text class="err-txt">错误示例{{ index + 1 }}</text>
       </view>
     </view>
-    <view class="name-btn-big marginTop20" @tap="$debounceClick(designImage)()">
+    <view class="name-btn-big marginTop20" @tap="$debounceClick(chooseImage)()">
       <view>导入照片并开始设计</view>
       <view class="pkg-info" v-if="hadAsk">
         剩余免费次数：
@@ -76,8 +98,10 @@
 <script setup>
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
+import { goToLogin, checkLogin } from "../../utils/common";
+import { baseUrl, requireLogin } from "../../utils/request";
 import { DraftStore, DraftType } from "../../store/draft";
-import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
+import { onLoad, onShow, onShareAppMessage } from "@dcloudio/uni-app";
 import { getUserInfo, getVipCount } from "../../api/user";
 import { createSwap } from "../../api/faceSwap";
 const renderWidth = 686;
@@ -86,6 +110,7 @@ const renderHeight = 714; //renderWidth * 1;
 const hadAsk = ref(false);
 const store = useStore();
 const selectIndex = ref(0);
+const curPage = ref(0);
 // store.dispatch("fetchSwap");
 const balance_draw = computed(() => store.state.balance_draw);
 const groupList = computed(() => {
@@ -100,9 +125,9 @@ const getUserBalance = () => {
   });
 };
 
-const handleMoreClick = (group, index) => {
+const handleMoreClick = (group, index, indexF) => {
   DraftStore.resetTemplate(store);
-  selectIndex.value = index;
+  selectIndex.value = index + indexF * 4;
 
   store.commit("setBrowseringGroupDetail", {
     groupId: group.id,
@@ -116,15 +141,115 @@ const handleMoreClick = (group, index) => {
 
 onShareAppMessage(() => {
   return {
-    title: "Luna AI写真",
+    title: "My写真",
     path: "/pages/swap/index",
   };
 });
+const handleSwiperChange = (current) => {
+  const nextPage = current.detail.current;
+  curPage.value = nextPage;
+};
 onLoad(() => {
   getUserBalance();
 });
+onShow(() => {
+  getUserBalance();
+});
+//来自draw/confirm.vue中同上传方法
+const selectedAvatar = ref(null);
+const chooseImage = async (sourceType = "album") => {
+  const isLogin = await checkLogin({ delta: 1 });
 
-const designImage = async () => {
+  if (!isLogin) {
+    uni.showToast({
+      title: "请登录",
+      icon: "none",
+    });
+    goToLogin();
+    return;
+  }
+
+  uni.chooseImage({
+    count: 1,
+    sizeType: ["original", "compressed"],
+    sourceType: [sourceType],
+    success: (res) => {
+      console.log(JSON.stringify(res.tempFilePaths));
+      confirmUpload(res.tempFilePaths[0]);
+    },
+    fail: () => {},
+  });
+};
+
+const confirmUpload = async (filePath) => {
+  console.log("filePath = ", filePath);
+  if (!filePath) {
+    return;
+  }
+
+  uni.showLoading({ title: "制作中", mask: true });
+  try {
+    /*const res = await createAvatar(filePath);
+    uni.hideLoading();
+    const data = res.data; //JSON.parse(res.data);
+    if (data.code === -1) {
+      requireLogin({
+        toastMsg: t("api-toast.login-status-expired"),
+      });
+    }
+    if (data.code !== 20000) {
+      uni.showToast({
+        title: data.msg || t("api-toast.server-error"),
+        icon: "none",
+      });
+      return;
+    }
+    //getAvatarList();
+    selectedAvatar.value = res.data.url;*/
+    const token = uni.getStorageSync("token");
+
+    // 如果存在 token，则将其添加到请求头中
+    let header;
+    if (token) {
+      header = { Authorization: token };
+    } else {
+      requireLogin();
+      return Promise.reject(new Error("No token found"));
+    }
+
+    uni.uploadFile({
+      //url: `${baseUrl}/api/face_swap/create_avatar`,
+      url: `${baseUrl}/system/upload`,
+      filePath: filePath,
+      name: "file",
+      header: header,
+      success: (res) => {
+        uni.hideLoading();
+        const data = JSON.parse(res.data);
+        if (data.code === -1) {
+          requireLogin({
+            toastMsg: t("api-toast.login-status-expired"),
+          });
+        }
+        if (data.code !== 20000) {
+          uni.showToast({
+            title: data.msg || t("api-toast.server-error"),
+            icon: "none",
+          });
+          return;
+        }
+        //getAvatarList();
+        selectedAvatar.value = data.data.url;
+        designImage(data.data.url);
+      },
+      fail: () => {},
+    });
+  } catch (err) {
+    console.log(err);
+    uni.hideLoading();
+  }
+};
+const designImage = async (imageUrl) => {
   // if (!selectedAvatar.value) {
   //   uni.showToast({
   //     title: "请先选择一个数字分身",
@@ -137,7 +262,7 @@ const designImage = async () => {
   const res = await createSwap({
     template_uuid: temp_uuid,
     // avatar_id: selectedAvatar.value.id,
-    origin_image: groupList.value[selectIndex.value].cover,
+    origin_image: imageUrl || groupList.value[selectIndex.value].cover,
   });
 
   if (res.code !== 20000) {
@@ -156,6 +281,7 @@ const designImage = async () => {
       target_image: groupList.value[selectIndex.value].cover,
     })
   );
+  getUserBalance();
   // AblumStore.setImageList(store, [
   //   new AblumType.ImageItem({
   //     result_image: res.data.result.result_image,

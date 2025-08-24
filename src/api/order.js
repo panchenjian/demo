@@ -6,16 +6,19 @@ export function getOrderList(data) {
   // 如果存在 token，则将其添加到请求头中
   let header;
   if (token) {
-    header = { Authorization:token };
+    header = { Authorization: token };
   } else {
     requireLogin();
     return Promise.reject(new Error("No token found"));
+  }
+  if (typeof data.page !== "number" || isNaN(data.page)) {
+    data.page = 1;
   }
 
   return request({
     url: "/order",
     method: "GET",
-    data:{...data,size:20},
+    data: { ...data, size: 20 },
     header: header,
   });
 }
@@ -37,39 +40,39 @@ export function getExpressPrice(address_uuid) {
   return request({
     url: "/order/cal",
     method: "POST",
-    data:{address_uuid},
+    data: { address_uuid },
     header: { Authorization: token },
   });
 }
 //重新支付
-export function payAgainOrder(order_no){
-	const token = uni.getStorageSync("token");
-	return request({
-	  url: "/order/repay",
-	  method: "POST",
-	  data:{order_no},
-	  header: { Authorization: token },
-	});
+export function payAgainOrder(order_no) {
+  const token = uni.getStorageSync("token");
+  return request({
+    url: "/order/repay",
+    method: "POST",
+    data: { order_no },
+    header: { Authorization: token },
+  });
 }
 //修改订单地址
-export function updateOrderAddress(order_no,address_uuid){
-	const token = uni.getStorageSync("token");
-	return request({
-	  url: "/order/update/address",
-	  method: "POST",
-	  data:{order_no,address_uuid},
-	  header: { Authorization: token },
-	});
+export function updateOrderAddress(order_no, address_uuid) {
+  const token = uni.getStorageSync("token");
+  return request({
+    url: "/order/update/address",
+    method: "POST",
+    data: { order_no, address_uuid },
+    header: { Authorization: token },
+  });
 }
 //关闭订单
-export function cancelOrder(order_no){
-	const token = uni.getStorageSync("token");
-	return request({
-	  url: `/order/close/${order_no}`,
-	  method: "PUT",
-	  //data:{order_no},
-	  header: { Authorization: token },
-	});
+export function cancelOrder(order_no) {
+  const token = uni.getStorageSync("token");
+  return request({
+    url: `/order/close/${order_no}`,
+    method: "PUT",
+    //data:{order_no},
+    header: { Authorization: token },
+  });
 }
 //订单详情
 export function getOrderDetail(order_no) {

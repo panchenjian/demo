@@ -273,7 +273,7 @@ const confirmUpload = async (filePath) => {
     return;
   }
 
-  uni.showLoading({ title: "数字分身制作中", mask: true });
+  uni.showLoading({ title: "图片上传中", mask: true });
   try {
     /*const res = await createAvatar(filePath);
     uni.hideLoading();
@@ -468,6 +468,7 @@ const onSubmit = async () => {
       target_image: userDraft.value.template.target_image, //模板图-》用户上传图//selectedAvatar.value,
     })
   );
+  getUserBalance();
   // AblumStore.setImageList(store, [
   //   new AblumType.ImageItem({
   //     result_image: res.data.result.result_image,
@@ -535,6 +536,7 @@ const onSubmit = async () => {
   // width: auto;
   // height: 100px;
   // border-radius: 32rpx;
+  margin: 0 auto;
 }
 
 .gallaryTheme {

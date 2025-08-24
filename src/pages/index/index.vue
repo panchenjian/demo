@@ -177,7 +177,11 @@ onLoad(async () => {
   // setTimeout(() => {
   //   //模拟到某个页面
   //   uni.navigateTo({
-  //     url: "/pages/order/result?orderId=2025072823470126156",
+  //     url:
+  //       "/pages/order/result?orderId=2025072823470126156&share=" +
+  //       encodeURIComponent(
+  //         "https://mydolldoll-test.oss-cn-shanghai.aliyuncs.com/alg_root/user_data/20250822005851_9c08548f-a2fe-4c61-afd9-1140c768edfd/01_style2d/gpt_image_1.png"
+  //       ),
   //   });
   // }, 1300);
 });

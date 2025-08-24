@@ -4,6 +4,7 @@
       v-model="currentTab"
       :tabs="tabs"
       field="name"
+      :scroll="false"
       @change="changeTab"
       lineColor="#B37DF5"
       activeColor="#B37DF5"
@@ -27,7 +28,7 @@
           :enhanced="true"
           :show-scrollbar="false"
           @scrolltolower="lower(group)">
-          <view class="template-wrap">
+          <view class="template-wrap" v-if="orderList?.length">
             <view
               v-for="(template, index) in orderList"
               :key="index"
@@ -36,7 +37,7 @@
               <view class="orderCard">
                 <view class="order-img">
                   <image
-                    :src="template.cover"
+                    :src="template?.cover"
                     class="template-item-img"></image>
                 </view>
                 <view class="column-flex flex-1 gap4">
@@ -88,7 +89,7 @@
                     </text>
                     <text>
                       ￥
-                      <text class="txtBig">{{ template.price }}</text>
+                      <text class="txtBig">{{ template.total_price }}</text>
                     </text>
                   </text>
                 </view>
@@ -145,6 +146,11 @@
               </view>
             </view>
           </view>
+          <view class="center-center" style="height: 50%" v-else>
+            <image
+              class="empty-img"
+              src="../../static/order-default-bg.png"></image>
+          </view>
         </scroll-view>
       </swiper-item>
     </swiper>
@@ -155,13 +161,13 @@
     background-color="#fff"
     border-radius="10px 10px 0 0">
     <view class="popup-content">
-      <view class="txtBig">
+      <view class="txtBig space-b-flex lineHeight24">
         微信扫描二维码添加客服咨询
         <icon type="clear" class="closeIcon" @tap="closeKeF"></icon>
       </view>
       <image
         src="https://img2.baidu.com/it/u=3165004975,3909462601&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=501"
-        mode=""></image>
+        class="margin32 block"></image>
     </view>
   </uni-popup>
 </template>
@@ -169,6 +175,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import Big from "big.js";
 import { AblumStore, AblumType } from "../../store/album";
 //import VTabs from "@/uni_modules/v-tabs/components/v-tabs/v-tabs";
 import { onLoad, onShareAppMessage } from "@dcloudio/uni-app";
@@ -201,24 +208,11 @@ const jumpOrderDetail = (template) => {
 };
 const getBanner = (id = "", page = 1, order_status = "") => {
   getOrderList({ id, page, order_status }).then((res) => {
-    // let tmp = [
-    //   {
-    //     order_no: "7df0a3c7ca3c97a5252f2217fc708603d586a946",
-    //     title: "定制手办",
-    //     order_status: 3,
-    //     description: "【DIY材料】仅白膜,6cm",
-    //     price: 29,
-    //     number: 1,
-    //     cover:
-    //       "https://img.zolimarket.com/6dfd849a-30c4-4894-b338-41ae39559139.png",
-    //     express_info: {
-    //       express_no: "",
-    //       express_company: "",
-    //     },
-    //     total_price: 30,
-    //   },
-    // ]; //res.data.items
-    let tmp = res.data.items;
+    let tmp = res.data.items?.map((x) => {
+      x.price = new Big(x.price).div(100);
+      x.total_price = new Big(x.total_price).div(100);
+      return x;
+    });
     store.commit("setOrderListByUuid", { id: id, page, data: tmp });
   });
 };
@@ -297,7 +291,7 @@ const payIt = async (item) => {
 
   try {
     let orderRes = await payAgainOrder(item.order_no);
-
+    //console.log("aaaz", orderRes);
     const {
       order_no: orderID,
       app_id,

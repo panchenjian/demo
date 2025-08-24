@@ -72,12 +72,17 @@ const mutations = {
         if (!x.list) {
           x.list = [];
         }
-        x.list = x.list.concat(data.data);
-        if (!x.curPage) {
-          x.curPage = 1;
-        } else {
-          x.curPage++;
-        }
+		if (data.page === 1) {
+		  x.list = data.data;
+		  x.curPage = 1;
+		} else {
+			x.list = x.list.concat(data.data);
+			if (!x.curPage) {
+			  x.curPage = 1;
+			} else {
+			  x.curPage++;
+			}
+		}
       }
       return x;
     });
@@ -166,11 +171,11 @@ const createFetchAction = (commit, state, getter, fetchFunction) => {
     return fetchPromise;
   }
 
-  return fetchFunction().then(({ mutationName, data, uuid }) => {
+  return fetchFunction().then(({ mutationName, page,data, uuid }) => {
     console.log("muat=", mutationName);
     mutationName && commit(mutationName, data);
     // if(uuid){
-    commit("setTempTitleListByUuid", { uuid, data: data });
+    commit("setTempTitleListByUuid", { uuid, page,data: data });
     // }
     return data;
   });

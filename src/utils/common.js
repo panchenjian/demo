@@ -30,7 +30,11 @@ export function getDrawingDraft(key) {
   }
   return payload;
 }
-
+export const goToLogin = () => {
+  uni.navigateTo({
+    url: "/pages/login/login",
+  });
+};
 export async function checkLogin(loginParam) {
   const token = uni.getStorageSync("token");
   let res;

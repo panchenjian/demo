@@ -53,6 +53,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import Big from "big.js";
 import {
   getRechargePackage,
   submitRechargeOrder,
@@ -191,6 +192,7 @@ const submitOrder = async () => {
 onLoad((option) => {
   getVipMembers().then((res) => {
     cards.value = res.data.items.map((x) => {
+      x.price = new Big(x.price).div(100);
       return {
         name: (x.times === 1 ? "单" : x.times) + "次生成卡",
         price: x.price,
@@ -210,11 +212,11 @@ onLoad((option) => {
   overflow: auto;
   background: linear-gradient(180deg, #f6ebfe 0%, #f7f7f7 100%);
 }
-.txtBigBig{
-	font-weight: 500;
-	font-size: 44rpx;
-	
-	line-height: 30rpx;
+.txtBigBig {
+  font-weight: 500;
+  font-size: 44rpx;
+
+  line-height: 30rpx;
 }
 .tab-body {
   background: #f7f7f7;

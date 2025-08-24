@@ -87,11 +87,11 @@ export function recordDetail(taskId) {
 
 export function getPolicy(data) {
   return request({
-    url: "/api/index/policy",
+    url: data.url,//"/api/index/policy",
     method: "GET",
     preventLoading: true,
     loginRequired: false,
-    data,
+    //data,
   });
 }
 //获得SKU信息

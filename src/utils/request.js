@@ -29,10 +29,10 @@ uni.addInterceptor("request", {
     }
   },
   success() {
-    uni.hideLoading();
+    //uni.hideLoading();
   },
   fail(err) {
-    uni.hideLoading();
+    //uni.hideLoading();
     console.log("interceptor on fail", err);
     uni.showToast({
       title: "请求失败，请检查网络设置",
